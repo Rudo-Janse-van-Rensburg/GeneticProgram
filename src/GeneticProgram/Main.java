@@ -7,15 +7,7 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Main {
-    /*
-    To:
-    ----------------------------
-    -> F1 score for fitness.
-    -> Impose unique restraint on initial population.
-    -> Application rate instead of mutation.
-    */
-    
+public class Main { 
     private static void RunExperiment(
             String root,
             String classname,
@@ -45,10 +37,7 @@ public class Main {
             //TRAIN
             System.out.println("RUN #" + (i + 1));
             System.out.println(root + "train_" + i + ".csv");
-            dataObj = new Data(i,numClasses, root + "train_" + i + ".csv", classname);
-            /*Data.ReadData(root + "train_" + i + ".csv", classname);
-            Data.SetRandomSeed(i);*/
-            GeneticOperators.InitializeAttributes(dataObj);
+            dataObj = new Data(i,numClasses, root + "train_" + i + ".csv", classname); 
             evolution                           = new Evolution(
                                                     dataObj,
                                                     populationSize,
@@ -62,12 +51,9 @@ public class Main {
             trainTime[i]                        = end - start;
             
             //TEST
-            dataObj = new Data(i,numClasses,root + "test_" + i + ".csv", classname);
-            /*
-            Data.ReadData(root + "test_" + i + ".csv", classname);
-            */
+            dataObj = new Data(i,numClasses,root + "test_" + i + ".csv", classname); 
             System.out.println("\nClasses     :   " + dataObj.GetNumberClasses());
-            GeneticOperators.InitializeAttributes(dataObj);
+            //GeneticOperators.InitializeAttributes(dataObj);
             System.out.println("Fitness     :   " + IndividualFactory.Fitness(classifier,dataObj));
             System.out.println("F1          :   " + IndividualFactory.F1(classifier,dataObj));
             System.out.println("Precision   :   " + IndividualFactory.Precision(classifier,dataObj));
@@ -99,40 +85,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        /*Covid Clinical Data*/
-        /*
-        RunExperiment(
-                "/media/rudo/Storage/Research/work-related/Code/Python/covid_clinical_data/",
-                "covid19_test_results",
-                "results_covid_clinical_data.csv",
-                2,
-                4000,
-                20,
-                4,
-                50,
-                0.02,
-                5, 
-                15
-        );
-        */
-        
-        /*
-        RunExperiment(
-                        "/media/rudo/Storage/Research/work-related/Code/Python/finding_&_clinical_notes/", 
-                        "finding",
-                        "results_finding_&_clinical_notes.csv",
-                        4,
-                        4000,
-                        20,
-                        4,
-                        100,
-                        0.02,
-                        5,
-                        15
-        ); 
-        */
-        
-        
+       /*
         RunExperiment(
                 "/media/rudo/Storage/Research/work-related/Code/Python/covid_clinical_data/",
                 "covid19_test_results",
@@ -146,7 +99,7 @@ public class Main {
                 5, 
                 15
         );
-        
+        */
         
         
         

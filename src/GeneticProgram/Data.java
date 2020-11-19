@@ -10,7 +10,9 @@ import java.util.Random;
 
 public final class Data {
     
-    private String[] attributes;
+    private String[] attributesWithClass;
+    private String[] attributesWithoutClass;
+    
     private String className;
     public int classPosition;
     private HashMap<String, Integer> attributePosition;
@@ -28,37 +30,42 @@ public final class Data {
     }
     
     public void ReadData(String filename, String classname){
-        this.className          = classname;
-        this.random             = new Random(42069);
-        String line             = "";
-        String splitBy          = ",";
+        this.className                  = classname;
+        this.random                     = new Random(42069);
+        String line                     = "";
+        String splitBy                  = ",";
         String [] items;
         try{
-            BufferedReader br       = new BufferedReader(new FileReader(filename));
-            line                    = br.readLine();
-            items                   = line.split(splitBy);
-            this.attributes         = new String[items.length-1];
-            this.data_list          = new ArrayList[this.attributes.length];
-            this.attributePosition  = new HashMap<>();
-            this.positionAttribute  = new HashMap<>();
-            for (int i = 0; i < this.attributes.length; i++) {
-                this.attributes[i]          = items[i+1]; 
-                this.attributePosition.put(this.attributes[i], i);
-                this.positionAttribute.put(i,this.attributes[i]);
+            BufferedReader br           = new BufferedReader(new FileReader(filename));
+            line                        = br.readLine();
+            items                       = line.split(splitBy);
+            this.attributesWithClass    = new String[items.length-1];//check this line
+            this.attributesWithoutClass = new String[this.attributesWithClass.length-1];
+            this.data_list              = new ArrayList[this.attributesWithClass.length];
+            this.attributePosition      = new HashMap<>();
+            this.positionAttribute      = new HashMap<>();
+            int position                = 0;
+            for (int i = 0; i < this.GetNumberAttributes(); i++) {
+                this.attributesWithClass[i] = items[i+1]; 
+                this.attributePosition.put(this.attributesWithClass[i], i);
+                this.positionAttribute.put(i,this.attributesWithClass[i]);
                 this.data_list[i]           = new ArrayList<>(); 
+                if(!attributesWithClass[i].equals(this.GetClass())){
+                    this.attributesWithoutClass[position++] = attributesWithClass[i];
+                }
             } 
-            int row                 = 0;
+            int row                     = 0;
             while((line = br.readLine()) != null){
                 items   = line.split(splitBy);
-                for (int i = 0; i < this.attributes.length; i++) {
+                for (int i = 0; i < this.attributesWithClass.length; i++) {
                     this.data_list[i].add(Double.parseDouble(items[i+1])); 
                 }
                 ++row;
             }
             this.dataSize           = row;
-            this.data_array         = new double[dataSize][attributes.length];
+            this.data_array         = new double[dataSize][attributesWithClass.length];
             for (int i = 0; i < this.dataSize; i++) {
-                for (int j = 0; j < attributes.length; j++) {
+                for (int j = 0; j < attributesWithClass.length; j++) {
                     this.data_array[i][j] = this.data_list[j].get(i);
                 }
             }
@@ -80,7 +87,7 @@ public final class Data {
     } 
     
     public int GetNumberAttributes(){
-        return this.attributes.length;
+        return this.attributesWithClass.length;
     }
     
     public int GetDataSize(){
@@ -88,16 +95,23 @@ public final class Data {
     }
     
     public String GetAttribute(int position){
-        return attributes[position];
+        return attributesWithClass[position];
     }
     
     public int GetPosition(String attribute){
         return this.attributePosition.get(attribute);
     }
     
+    
+    
     public String[] GetAttributes(){
-        return this.attributes;
+        return this.attributesWithClass;
     }
+    
+    public String[] GetAttributesWithoutClass(){
+        return this.attributesWithoutClass;
+    }
+    
     
     public String GetClass(){
         return this.className;
@@ -108,7 +122,7 @@ public final class Data {
     }
     
     public String ToString() {
-        return Arrays.toString(this.attributes);
+        return Arrays.toString(this.attributesWithClass);
     }
      
     

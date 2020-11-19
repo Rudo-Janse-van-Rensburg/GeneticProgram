@@ -44,6 +44,7 @@ public class GeneticOperators {
         {"Class","If"}
     }; 
     
+    /*
     private static String[] attributes;
 
     public static void InitializeAttributes(Data dataObj) {
@@ -53,7 +54,7 @@ public class GeneticOperators {
             if (!dataObj.GetAttribute(i).equalsIgnoreCase(dataObj.GetClass())) 
                 GeneticOperators.attributes[pos++] = dataObj.GetAttribute(i);
     } 
-    
+    */
     public static If Grow(int depth, int maxDepth, Data dataObj) {
         if (depth < maxDepth) {
             if (depth == 0 || dataObj.GetPercentage() <= 0.5) {
@@ -128,7 +129,7 @@ public class GeneticOperators {
                 c.SetRight((dataObj.GetPercentage() < 0.5)? CreateArithmeticCondition(0,maxDepth,dataObj) : CreateAttributeCondition(0,maxDepth,dataObj));
                 break;
             case "Attribute":
-                newOperator = attributes[dataObj.GetRandomIntExclusive(0, attributes.length)];
+                newOperator = dataObj.GetAttributesWithoutClass()[dataObj.GetRandomIntExclusive(0, dataObj.GetAttributesWithoutClass().length)];
                 c.SetOperator(newOperator);
                 c.SetLeft(null);
                 c.SetRight(null);
@@ -453,7 +454,7 @@ public class GeneticOperators {
                         switch(c.GetType()){
                             case "Arithmetic":
                                 c.SetType("Attribute");
-                                c.SetOperator(attributes[dataObj.GetRandomIntExclusive(0, attributes.length)]);
+                                c.SetOperator(dataObj.GetAttributesWithoutClass()[dataObj.GetRandomIntExclusive(0, dataObj.GetAttributesWithoutClass().length)]);
                                 c.SetLeft(null);
                                 c.SetRight(null);
                                 break;
@@ -466,7 +467,7 @@ public class GeneticOperators {
                         switch(c.GetType()){
                             case "Arithmetic":
                                 c.SetType("Attribute");
-                                c.SetOperator(attributes[dataObj.GetRandomIntExclusive(0,attributes.length)]);
+                                c.SetOperator(dataObj.GetAttributesWithoutClass()[dataObj.GetRandomIntExclusive(0,dataObj.GetAttributesWithoutClass().length)]);
                                 c.SetLeft(null);
                                 c.SetRight(null);
                                 break;
@@ -608,11 +609,11 @@ public class GeneticOperators {
     }
 
     private static Attribute CreateAttributeCondition(Data dataObj){
-        return new Attribute(GeneticOperators.attributes[dataObj.GetRandomIntExclusive(0,GeneticOperators.attributes.length)]);
+        return new Attribute(dataObj.GetAttributesWithoutClass()[dataObj.GetRandomIntExclusive(0,dataObj.GetAttributesWithoutClass().length)]);
     }
     
     private static Attribute CreateAttributeCondition(int depth, int maxDepth, Data dataObj){
-        return new Attribute(GeneticOperators.attributes[dataObj.GetRandomIntExclusive(0, GeneticOperators.attributes.length)]);
+        return new Attribute(dataObj.GetAttributesWithoutClass()[dataObj.GetRandomIntExclusive(0,dataObj.GetAttributesWithoutClass().length)]);
     }
     
 }
