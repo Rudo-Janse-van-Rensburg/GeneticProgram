@@ -44,60 +44,61 @@ public class GeneticOperators {
         {"Class","If"}
     }; 
     
+    /*
     private static String[] attributes;
 
-    public static void InitializeAttributes() {
-        attributes = new String[Data.GetNumberAttributes()-1];
+    public static void InitializeAttributes(Data dataObj) {
+        attributes = new String[dataObj.GetNumberAttributes()-1];
         int pos = 0;
-        for (int i = 0; i < Data.GetNumberAttributes(); i++) 
-            if (!Data.GetAttribute(i).equalsIgnoreCase(Data.GetClass())) 
-                GeneticOperators.attributes[pos++] = Data.GetAttribute(i);
+        for (int i = 0; i < dataObj.GetNumberAttributes(); i++) 
+            if (!dataObj.GetAttribute(i).equalsIgnoreCase(dataObj.GetClass())) 
+                GeneticOperators.attributes[pos++] = dataObj.GetAttribute(i);
     } 
-    
-    public static If Grow(int depth, int maxDepth) {
+    */
+    public static If Grow(int depth, int maxDepth, Data dataObj) {
         if (depth < maxDepth) {
-            if (depth == 0 || Data.GetPercentage() <= 0.5) {
-                Condition c = CreateRootCondition(depth + 1, maxDepth);
-                If t        = Grow(depth + 1 , maxDepth);
-                If f        = Grow(depth + 1 , maxDepth);
+            if (depth == 0 || dataObj.GetPercentage() <= 0.5) {
+                Condition c = CreateRootCondition(depth + 1, maxDepth,dataObj);
+                If t        = Grow(depth + 1 , maxDepth, dataObj);
+                If f        = Grow(depth + 1 , maxDepth, dataObj);
                 return new If(c, t, f);
             } else 
-                return new Class(Data.GetRandomIntExclusive(0, Data.GetNumberClasses()));
+                return new Class(dataObj.GetRandomIntExclusive(0, dataObj.GetNumberClasses()));
             
         } else 
-            return new Class(Data.GetRandomIntExclusive(0, Data.GetNumberClasses()));
+            return new Class(dataObj.GetRandomIntExclusive(0, dataObj.GetNumberClasses()));
     } 
     
-    public static void Mutate(Individual m){
+    public static void Mutate(Individual m, Data dataObj){
         //System.out.print("MUTATING ");
-        if(!m.GetRoot().GetType().equals("Class") && Data.GetPercentage() < 0.5){
+        if(!m.GetRoot().GetType().equals("Class") && dataObj.GetPercentage() < 0.5){
             //System.out.print("CONDITION\n");
             int conditionPlace;
             String type;
             Condition mutationPoint = null;
             do{
-                conditionPlace  = Data.GetRandomIntExclusive(0, conditionTypes.length);
+                conditionPlace  = dataObj.GetRandomIntExclusive(0, conditionTypes.length);
                 type            = conditionTypes[conditionPlace];
-                mutationPoint   = GetConditionCrossover(m, new String[]{type});
+                mutationPoint   = GetConditionCrossover(m, new String[]{type},dataObj);
             }while(mutationPoint == null);
-            MutateCondition(mutationPoint,conditionCompatible[conditionPlace]);
+            MutateCondition(mutationPoint,conditionCompatible[conditionPlace],dataObj);
         }else{
             //System.out.print("IF\n");
             int ifPlace;
             String type;
             If mutationPoint    = null;
             do{
-                ifPlace         = Data.GetRandomIntExclusive(0, ifTypes.length);
+                ifPlace         = dataObj.GetRandomIntExclusive(0, ifTypes.length);
                 type            = ifTypes[ifPlace];
-                mutationPoint   = GetIfCrossover(m, new String[]{type});
+                mutationPoint   = GetIfCrossover(m, new String[]{type}, dataObj);
             }while(mutationPoint == null);
-            MutateIf(mutationPoint,ifCompatible[ifPlace]);
+            MutateIf(mutationPoint,ifCompatible[ifPlace],dataObj);
         }
-        Trim(m, 0, maxDepth);
+        Trim(m, 0, maxDepth, dataObj);
     }
     
-    private static void MutateCondition(Condition c, String [] compatible){
-        int newTypeIndex    = Data.GetRandomIntExclusive(0, compatible.length);
+    private static void MutateCondition(Condition c, String [] compatible, Data dataObj){
+        int newTypeIndex    = dataObj.GetRandomIntExclusive(0, compatible.length);
         String newType      = compatible[newTypeIndex];
         //System.out.println(c.GetType()+" -> "+newType);
         //System.out.print(c.GetOperator()+" -> ");
@@ -105,30 +106,30 @@ public class GeneticOperators {
         String newOperator  = "";
         switch (newType) {
             case "Logical":
-                newOperator  = logical[Data.GetRandomIntExclusive(0,logical.length)];
+                newOperator  = logical[dataObj.GetRandomIntExclusive(0,logical.length)];
                 c.SetOperator(newOperator);
                 if(!c.GetOperator().equals("NOT")){
-                    c.SetLeft((Data.GetPercentage() < 0.5)? CreateLogicalCondition(0,maxDepth) : CreateRelationalCondition(0,maxDepth));
-                    c.SetRight((Data.GetPercentage() < 0.5)? CreateLogicalCondition(0,maxDepth) : CreateRelationalCondition(0,maxDepth));
+                    c.SetLeft((dataObj.GetPercentage() < 0.5)? CreateLogicalCondition(0,maxDepth,dataObj) : CreateRelationalCondition(0,maxDepth,dataObj));
+                    c.SetRight((dataObj.GetPercentage() < 0.5)? CreateLogicalCondition(0,maxDepth,dataObj) : CreateRelationalCondition(0,maxDepth,dataObj));
                 }else{
                     c.SetLeft(null);
-                    c.SetRight((Data.GetPercentage() < 0.5)? CreateLogicalCondition(0,maxDepth) : CreateRelationalCondition(0,maxDepth));
+                    c.SetRight((dataObj.GetPercentage() < 0.5)? CreateLogicalCondition(0,maxDepth,dataObj) : CreateRelationalCondition(0,maxDepth,dataObj));
                 }   
                 break;
             case "Relational":
-                newOperator  = relational[Data.GetRandomIntExclusive(0,relational.length)];
+                newOperator  = relational[dataObj.GetRandomIntExclusive(0,relational.length)];
                 c.SetOperator(newOperator);
-                c.SetLeft((Data.GetPercentage() < 0.5)? CreateArithmeticCondition(0,maxDepth) : CreateAttributeCondition(0,maxDepth));
-                c.SetRight((Data.GetPercentage() < 0.5)? CreateArithmeticCondition(0,maxDepth) : CreateAttributeCondition(0,maxDepth));
+                c.SetLeft((dataObj.GetPercentage() < 0.5)? CreateArithmeticCondition(0,maxDepth,dataObj) : CreateAttributeCondition(0,maxDepth,dataObj));
+                c.SetRight((dataObj.GetPercentage() < 0.5)? CreateArithmeticCondition(0,maxDepth,dataObj) : CreateAttributeCondition(0,maxDepth,dataObj));
                 break;
             case "Arithmetic":
-                newOperator = arithmetic[Data.GetRandomIntExclusive(0, arithmetic.length)];
+                newOperator = arithmetic[dataObj.GetRandomIntExclusive(0, arithmetic.length)];
                 c.SetOperator(newOperator);
-                c.SetLeft((Data.GetPercentage() < 0.5)? CreateArithmeticCondition(0,maxDepth) : CreateAttributeCondition(0,maxDepth));
-                c.SetRight((Data.GetPercentage() < 0.5)? CreateArithmeticCondition(0,maxDepth) : CreateAttributeCondition(0,maxDepth));
+                c.SetLeft((dataObj.GetPercentage() < 0.5)? CreateArithmeticCondition(0,maxDepth,dataObj) : CreateAttributeCondition(0,maxDepth,dataObj));
+                c.SetRight((dataObj.GetPercentage() < 0.5)? CreateArithmeticCondition(0,maxDepth,dataObj) : CreateAttributeCondition(0,maxDepth,dataObj));
                 break;
             case "Attribute":
-                newOperator = attributes[Data.GetRandomIntExclusive(0, attributes.length)];
+                newOperator = dataObj.GetAttributesWithoutClass()[dataObj.GetRandomIntExclusive(0, dataObj.GetAttributesWithoutClass().length)];
                 c.SetOperator(newOperator);
                 c.SetLeft(null);
                 c.SetRight(null);
@@ -137,16 +138,16 @@ public class GeneticOperators {
         //System.out.print(c.GetOperator()+"\n");
     }
 
-    private static void MutateIf(If i, String [] compatible){
-        int newTypeIndex    = Data.GetRandomIntExclusive(0,compatible.length);
+    private static void MutateIf(If i, String [] compatible, Data dataObj){
+        int newTypeIndex    = dataObj.GetRandomIntExclusive(0,compatible.length);
         String newType      = compatible[newTypeIndex];
         //System.out.println(i.GetType()+" -> "+newType);
         i.SetType(newType);
         switch(newType){
             case "If":
-                i.SetCondition((Data.GetPercentage() < 0.5)? CreateLogicalCondition(0,maxDepth) : CreateRelationalCondition(0,maxDepth));
-                i.SetTrue(Grow(0, 3));
-                i.SetFalse(Grow(0, 3));
+                i.SetCondition((dataObj.GetPercentage() < 0.5)? CreateLogicalCondition(0,maxDepth,dataObj) : CreateRelationalCondition(0,maxDepth,dataObj));
+                i.SetTrue(Grow(0, 3, dataObj));
+                i.SetFalse(Grow(0, 3, dataObj));
                 i.SetClass(Double.NaN);
                 break;
             case "Class":
@@ -154,25 +155,25 @@ public class GeneticOperators {
                 i.SetTrue(null);
                 i.SetFalse(null);
                 //i.SetClass(Data.GetRandomIntInclusive(Data.GetMinMax(Data.GetClass())));
-                i.SetClass(Data.GetRandomIntExclusive(0, Data.GetNumberClasses()));
+                i.SetClass(dataObj.GetRandomIntExclusive(0, dataObj.GetNumberClasses()));
                 break;
         }
     }
     
-    public static Individual[] Crossover(Individual a, Individual b){
+    public static Individual[] Crossover(Individual a, Individual b, Data dataObj){
         //System.out.print("CROSSOVER ");
         Individual newA = new Individual(a);
         Individual newB = new Individual(b);
         
-        if(!newA.GetRoot().GetType().equals("Class") && !newB.GetRoot().GetType().equals("Class") && Data.GetPercentage() < 0.5){
+        if(!newA.GetRoot().GetType().equals("Class") && !newB.GetRoot().GetType().equals("Class") && dataObj.GetPercentage() < 0.5){
             //System.out.print("CONDITION\n"); 
             int conditionPlace;
             String type;
             Condition crossoverA;
             do{
-                conditionPlace  = Data.GetRandomIntExclusive(0, conditionTypes.length);
+                conditionPlace  = dataObj.GetRandomIntExclusive(0, conditionTypes.length);
                 type            = conditionTypes[conditionPlace];
-                crossoverA      = GetConditionCrossover(newA, new String[]{type});
+                crossoverA      = GetConditionCrossover(newA, new String[]{type},dataObj);
             }while(crossoverA == null);
             
 
@@ -197,7 +198,7 @@ public class GeneticOperators {
             }
             Condition crossoverB;
             do{
-                crossoverB = GetConditionCrossover(newB, conditionCompatible[conditionPlace]);
+                crossoverB = GetConditionCrossover(newB, conditionCompatible[conditionPlace],dataObj);
             }while(crossoverB == null);
             //System.out.print(crossoverB.GetType()+"\n");
             crossoverA.SetOperator(crossoverB.GetOperator());
@@ -215,9 +216,9 @@ public class GeneticOperators {
             String type;
             If crossoverA;
             do{
-                ifPlace     = Data.GetRandomIntExclusive(0,ifTypes.length);
+                ifPlace     = dataObj.GetRandomIntExclusive(0,ifTypes.length);
                 type        = ifTypes[ifPlace];
-                crossoverA  = GetIfCrossover(newA, new String[]{type});
+                crossoverA  = GetIfCrossover(newA, new String[]{type},dataObj);
             }while(crossoverA == null);
             
             //System.out.print(crossoverA.GetType()+" -> ");
@@ -234,7 +235,7 @@ public class GeneticOperators {
                     break;
             }
             
-            If crossoverB           =  GetIfCrossover(newB, ifCompatible[ifPlace]);
+            If crossoverB           =  GetIfCrossover(newB, ifCompatible[ifPlace],dataObj);
             //System.out.print(crossoverB.GetType()+"\n");
             
             crossoverA.SetCondition(crossoverB.GetCondition());
@@ -249,21 +250,21 @@ public class GeneticOperators {
             crossoverB.SetFalse(tempA.GetFalse());
             crossoverB.SetClass(tempA.GetClass());
         } 
-        Trim(newA,0,maxDepth);
-        Trim(newB,0,maxDepth); 
+        Trim(newA,0,maxDepth,dataObj);
+        Trim(newB,0,maxDepth,dataObj); 
         return new Individual[]{newA,newB};
     } 
     
-    private static Condition GetConditionCrossover(Individual i,String[] types){
+    private static Condition GetConditionCrossover(Individual i,String[] types,Data dataObj){
         ArrayList<Condition> condition  = new ArrayList<>();
         GetConditionNodes(condition,i.GetRoot(),types);
-        return condition.size() > 0 ? condition.get(Data.GetRandomIntExclusive(0, condition.size())) : null;
+        return condition.size() > 0 ? condition.get(dataObj.GetRandomIntExclusive(0, condition.size())) : null;
     }
     
-    private static If GetIfCrossover(Individual i, String[] types){
+    private static If GetIfCrossover(Individual i, String[] types,Data dataObj){
         ArrayList<If> if_nodes          = new ArrayList<>();
         GetIfNodes(if_nodes, i.GetRoot(), types);
-        return if_nodes.size() > 0 ? if_nodes.get(Data.GetRandomIntExclusive(0, if_nodes.size())) : null;
+        return if_nodes.size() > 0 ? if_nodes.get(dataObj.GetRandomIntExclusive(0, if_nodes.size())) : null;
     }
     
     private static void GetConditionNodes(ArrayList<Condition> condition,If i,String[] types){
@@ -304,18 +305,18 @@ public class GeneticOperators {
         }
     } 
     
-    public static void Trim(Individual i, int depth, int maxDepth){
-        TrimPrimitive(i.GetRoot(), depth, maxDepth);
+    public static void Trim(Individual i, int depth, int maxDepth,Data dataObj){
+        TrimPrimitive(i.GetRoot(), depth, maxDepth,dataObj);
     }
     
-    private static void TrimPrimitive(If p, int depth, int maxDepth){
+    private static void TrimPrimitive(If p, int depth, int maxDepth,Data dataObj){
         if(depth < maxDepth && p.GetType().equals("If")){
-            TrimCondition(p.GetCondition(), depth + 1, maxDepth, null);
-            TrimPrimitive(p.GetTrue(), depth + 1, maxDepth);
-            TrimPrimitive(p.GetFalse(), depth + 1, maxDepth);
+            TrimCondition(p.GetCondition(), depth + 1, maxDepth, null, dataObj);
+            TrimPrimitive(p.GetTrue(), depth + 1, maxDepth, dataObj);
+            TrimPrimitive(p.GetFalse(), depth + 1, maxDepth, dataObj);
         }else if(p.GetType().equals("If")){
             p.SetType("Class");
-            p.SetClass(Data.GetRandomIntExclusive(0, Data.GetNumberClasses()));
+            p.SetClass(dataObj.GetRandomIntExclusive(0, dataObj.GetNumberClasses()));
             //p.SetClass(Data.GetRandomIntInclusive(Data.GetMinMax(Data.GetClass())));
             p.SetTrue(null);
             p.SetFalse(null);
@@ -323,7 +324,7 @@ public class GeneticOperators {
         } 
     }
     
-    private static void TrimCondition(Condition c, int depth, int maxDepth, String parentType){
+    private static void TrimCondition(Condition c, int depth, int maxDepth, String parentType,Data dataObj){
         if(parentType != null){
             /*Not the root of the condition*/
             if(depth < maxDepth - 2){
@@ -332,27 +333,27 @@ public class GeneticOperators {
                     case "Logical":
                         switch(c.GetOperator()){
                             case "NOT":
-                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(),dataObj);
                                 break;
                             default:
-                                TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType());
-                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                                TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(),dataObj);
+                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(), dataObj);
                                 break;
                         }
                         break;
                     case "Relational":
-                        TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType());
-                        TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                        TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(),dataObj);
+                        TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(),dataObj);
                         break;
                     case "Arithmetic":
-                        TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType());
-                        TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                        TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(),dataObj);
+                        TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(),dataObj);
                         break;
                     case "Attribute":
                         break;
                     default:
-                        TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType());
-                        TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                        TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(),dataObj);
+                        TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(),dataObj);
                         break;
                 }
             }else if(depth == maxDepth - 2){
@@ -363,21 +364,21 @@ public class GeneticOperators {
                             case "Logical":
                                 switch(c.GetOperator()){
                                     case "NOT":
-                                        TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                                        TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(), dataObj);
                                         break;
                                     default:
-                                        TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType());
-                                        TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                                        TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(), dataObj);
+                                        TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(), dataObj);
                                         break;
                                 }
                                 break;
                             case "Relational":
-                                TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType());
-                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                                TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(), dataObj);
+                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(), dataObj);
                                 break;
                             case "Arithmetic":
-                                TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType());
-                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                                TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(), dataObj);
+                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(), dataObj);
                                 break;
                             case "Attribute":
                                 break;
@@ -387,8 +388,8 @@ public class GeneticOperators {
                         //parent is relational
                         switch(c.GetType()){
                             case "Arithmetic":
-                                TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType());
-                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                                TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(), dataObj);
+                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(), dataObj);
                                 break;
                             case "Attribute":
                                 break;
@@ -396,8 +397,8 @@ public class GeneticOperators {
                         break;
                     case "Arithmetic":
                         //parent is arithmetic
-                        TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType());
-                        TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                        TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(), dataObj);
+                        TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(), dataObj);
                         break; 
                 } 
             }else if(depth == maxDepth - 1){
@@ -407,17 +408,17 @@ public class GeneticOperators {
                         switch(c.GetType()){
                             case "Logical":
                                 c.SetType("Relational");
-                                c.SetOperator(relational[Data.GetRandomIntExclusive(0, relational.length)]);
-                                c.SetLeft(CreateArithmeticCondition(depth + 1, maxDepth));
-                                c.SetRight(CreateArithmeticCondition(depth + 1, maxDepth));
+                                c.SetOperator(relational[dataObj.GetRandomIntExclusive(0, relational.length)]);
+                                c.SetLeft(CreateArithmeticCondition(depth + 1, maxDepth,dataObj));
+                                c.SetRight(CreateArithmeticCondition(depth + 1, maxDepth,dataObj));
                                 break;
                             case "Relational":
-                                TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType());
-                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                                TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(), dataObj);
+                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(), dataObj);
                                 break;
                             case "Arithmetic":
-                                TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType());
-                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                                TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(), dataObj);
+                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(),dataObj);
                                 break;
                             case "Attribute":
                                 break;
@@ -427,8 +428,8 @@ public class GeneticOperators {
                         //parent is relational
                         switch(c.GetType()){
                             case "Arithmetic":
-                                TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType());
-                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                                TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(), dataObj);
+                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(), dataObj);
                                 break;
                             case "Attribute":
                                 break;
@@ -438,8 +439,8 @@ public class GeneticOperators {
                         //parent is arithmetic
                         switch(c.GetType()){
                             case "Arithmetic":
-                                TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType());
-                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                                TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(), dataObj);
+                                TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(), dataObj);
                                 break;
                             case "Attribute":
                                 break;
@@ -453,7 +454,7 @@ public class GeneticOperators {
                         switch(c.GetType()){
                             case "Arithmetic":
                                 c.SetType("Attribute");
-                                c.SetOperator(attributes[Data.GetRandomIntExclusive(0, attributes.length)]);
+                                c.SetOperator(dataObj.GetAttributesWithoutClass()[dataObj.GetRandomIntExclusive(0, dataObj.GetAttributesWithoutClass().length)]);
                                 c.SetLeft(null);
                                 c.SetRight(null);
                                 break;
@@ -466,7 +467,7 @@ public class GeneticOperators {
                         switch(c.GetType()){
                             case "Arithmetic":
                                 c.SetType("Attribute");
-                                c.SetOperator(attributes[Data.GetRandomIntExclusive(0,attributes.length)]);
+                                c.SetOperator(dataObj.GetAttributesWithoutClass()[dataObj.GetRandomIntExclusive(0,dataObj.GetAttributesWithoutClass().length)]);
                                 c.SetLeft(null);
                                 c.SetRight(null);
                                 break;
@@ -484,135 +485,135 @@ public class GeneticOperators {
                 case "Logical":
                     switch(c.GetOperator()){
                         case "NOT":
-                            TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                            TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(),dataObj);
                             break;
                         case "AND":
-                            TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType());
-                            TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                            TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(),dataObj);
+                            TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(),dataObj);
                             break;
                         case "OR":
-                            TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType());
-                            TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                            TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(),dataObj);
+                            TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(),dataObj);
                             break;
                     }
                     break;
                 case "Relational":
-                    TrimCondition(c.GetLeft(), depth + 1 , maxDepth, c.GetType());
-                    TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType());
+                    TrimCondition(c.GetLeft(), depth + 1 , maxDepth, c.GetType(),dataObj);
+                    TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(),dataObj);
                     break;
             }
         }
         
     }  
     
-    private static Condition CreateRootCondition(int depth,int maxDepth) {
-        if(depth < maxDepth - 2 && Data.GetPercentage() < 0.5)
-            return CreateLogicalCondition(depth + 1, maxDepth);
+    private static Condition CreateRootCondition(int depth,int maxDepth, Data dataObj) {
+        if(depth < maxDepth - 2 && dataObj.GetPercentage() < 0.5)
+            return CreateLogicalCondition(depth + 1, maxDepth,dataObj);
         else  
-            return CreateRelationalCondition(depth + 1, maxDepth);
+            return CreateRelationalCondition(depth + 1, maxDepth, dataObj);
     }
 
-    private static Logical CreateLogicalCondition(){
-        double percentage           = Data.GetPercentage();
-        String operator             = logical[Data.GetRandomIntExclusive(0,logical.length)];
+    private static Logical CreateLogicalCondition(Data dataObj){
+        double percentage           = dataObj.GetPercentage();
+        String operator             = logical[dataObj.GetRandomIntExclusive(0,logical.length)];
         if(!operator.equals("NOT")){
             return new Logical(
                     operator,
-                    (Data.GetPercentage() < 0.5) ? CreateLogicalCondition() : CreateRelationalCondition(),
-                    (Data.GetPercentage() < 0.5) ? CreateLogicalCondition() : CreateRelationalCondition()
+                    (dataObj.GetPercentage() < 0.5) ? CreateLogicalCondition(dataObj) : CreateRelationalCondition(dataObj),
+                    (dataObj.GetPercentage() < 0.5) ? CreateLogicalCondition(dataObj) : CreateRelationalCondition(dataObj)
             );
         }else{
            return new Logical(
                     operator,
-                    (Data.GetPercentage() < 0.5) ? CreateLogicalCondition() : CreateRelationalCondition()
+                    (dataObj.GetPercentage() < 0.5) ? CreateLogicalCondition(dataObj) : CreateRelationalCondition(dataObj)
             ); 
         }
     }
     
-    private static Logical CreateLogicalCondition(int depth, int maxDepth) {
-        double percentage = Data.GetPercentage();
+    private static Logical CreateLogicalCondition(int depth, int maxDepth, Data dataObj) {
+        double percentage = dataObj.GetPercentage();
         if(depth < maxDepth - 2){
             if(percentage < 1/3*1/3)
                 return new Logical(
                          GeneticOperators.logical[2],//"NOT"
-                        (Data.GetPercentage() < 0.5) ? CreateLogicalCondition(depth + 1, maxDepth) : CreateRelationalCondition(depth + 1, maxDepth)
+                        (dataObj.GetPercentage() < 0.5) ? CreateLogicalCondition(depth + 1, maxDepth,dataObj) : CreateRelationalCondition(depth + 1, maxDepth,dataObj)
                 );
             else 
                 return new Logical(
-                        GeneticOperators.logical[Data.GetRandomIntExclusive(0, GeneticOperators.logical.length-1)],
-                        (Data.GetPercentage() < 0.5) ? CreateLogicalCondition(depth + 1, maxDepth) : CreateRelationalCondition(depth + 1, maxDepth),
-                        (Data.GetPercentage() < 0.5) ? CreateLogicalCondition(depth + 1, maxDepth) : CreateRelationalCondition(depth + 1, maxDepth) 
+                        GeneticOperators.logical[dataObj.GetRandomIntExclusive(0, GeneticOperators.logical.length-1)],
+                        (dataObj.GetPercentage() < 0.5) ? CreateLogicalCondition(depth + 1, maxDepth,dataObj) : CreateRelationalCondition(depth + 1, maxDepth, dataObj),
+                        (dataObj.GetPercentage() < 0.5) ? CreateLogicalCondition(depth + 1, maxDepth,dataObj) : CreateRelationalCondition(depth + 1, maxDepth, dataObj)
                 );
         }else{
             if(percentage < 1/3*1/3)
                 return new Logical(
                         GeneticOperators.logical[2],
-                        CreateRelationalCondition(depth + 1, maxDepth)
+                        CreateRelationalCondition(depth + 1, maxDepth, dataObj)
                 );
             else
                 return new Logical(
-                        GeneticOperators.logical[Data.GetRandomIntExclusive(0, GeneticOperators.logical.length-1)],
-                        CreateRelationalCondition(depth + 1, maxDepth),
-                        CreateRelationalCondition(depth + 1, maxDepth)
+                        GeneticOperators.logical[dataObj.GetRandomIntExclusive(0, GeneticOperators.logical.length-1)],
+                        CreateRelationalCondition(depth + 1, maxDepth, dataObj),
+                        CreateRelationalCondition(depth + 1, maxDepth, dataObj)
                 );
         } 
     }
 
-    private static Relational CreateRelationalCondition(){
-        String operator                 = relational[Data.GetRandomIntExclusive(0,relational.length)];
+    private static Relational CreateRelationalCondition(Data dataObj){
+        String operator                 = relational[dataObj.GetRandomIntExclusive(0,relational.length)];
         return new Relational(
                 operator,
-                (Data.GetPercentage() < 0.5) ? CreateArithmeticCondition() : CreateAttributeCondition(),
-                (Data.GetPercentage() < 0.5) ? CreateArithmeticCondition() : CreateAttributeCondition()
+                (dataObj.GetPercentage() < 0.5) ? CreateArithmeticCondition(dataObj) : CreateAttributeCondition(dataObj),
+                (dataObj.GetPercentage() < 0.5) ? CreateArithmeticCondition(dataObj) : CreateAttributeCondition(dataObj)
         );
     }
     
-    private static Relational CreateRelationalCondition(int depth, int maxDepth) {
+    private static Relational CreateRelationalCondition(int depth, int maxDepth, Data dataObj) {
         if(depth < maxDepth - 1)
             return new Relational(
-                GeneticOperators.relational[Data.GetRandomIntExclusive(0, GeneticOperators.relational.length)],
-                (Data.GetPercentage() < 0.5) ? CreateArithmeticCondition(depth + 1, maxDepth) : CreateAttributeCondition(depth+1, maxDepth),
-                (Data.GetPercentage() < 0.5)  ? CreateArithmeticCondition(depth + 1, maxDepth) : CreateAttributeCondition(depth+1, maxDepth)
+                GeneticOperators.relational[dataObj.GetRandomIntExclusive(0, GeneticOperators.relational.length)],
+                (dataObj.GetPercentage() < 0.5) ? CreateArithmeticCondition(depth + 1, maxDepth, dataObj) : CreateAttributeCondition(depth+1, maxDepth,dataObj),
+                (dataObj.GetPercentage() < 0.5)  ? CreateArithmeticCondition(depth + 1, maxDepth, dataObj) : CreateAttributeCondition(depth+1, maxDepth,dataObj)
             );
         else 
             return new Relational(
-                GeneticOperators.relational[Data.GetRandomIntExclusive(0, GeneticOperators.relational.length)],
-                CreateArithmeticCondition(depth + 1, maxDepth),
-                CreateArithmeticCondition(depth + 1, maxDepth)
+                GeneticOperators.relational[dataObj.GetRandomIntExclusive(0, GeneticOperators.relational.length)],
+                CreateArithmeticCondition(depth + 1, maxDepth, dataObj),
+                CreateArithmeticCondition(depth + 1, maxDepth, dataObj)
             );
     }
 
-    private static Arithmetic CreateArithmeticCondition(){
-        String operator                 = arithmetic[Data.GetRandomIntExclusive(0,arithmetic.length)];
+    private static Arithmetic CreateArithmeticCondition(Data dataObj){
+        String operator                 = arithmetic[dataObj.GetRandomIntExclusive(0,arithmetic.length)];
         return new Arithmetic(
                 operator,
-                (Data.GetPercentage() < 0.5) ? CreateArithmeticCondition() : CreateAttributeCondition(),
-                (Data.GetPercentage() < 0.5) ? CreateArithmeticCondition() : CreateAttributeCondition()
+                (dataObj.GetPercentage() < 0.5) ? CreateArithmeticCondition(dataObj) : CreateAttributeCondition(dataObj),
+                (dataObj.GetPercentage() < 0.5) ? CreateArithmeticCondition(dataObj) : CreateAttributeCondition(dataObj)
         );
     }
     
-    private static Arithmetic CreateArithmeticCondition(int depth, int maxDepth) {
-        double p    = Data.GetPercentage();
+    private static Arithmetic CreateArithmeticCondition(int depth, int maxDepth, Data dataObj) {
+        double p    = dataObj.GetPercentage();
         if(depth < maxDepth - 1)
             return new Arithmetic(
-                    GeneticOperators.arithmetic[Data.GetRandomIntExclusive(0, GeneticOperators.arithmetic.length)],
-                    (Data.GetPercentage() < 0.5) ? CreateArithmeticCondition(depth + 1, maxDepth) : CreateAttributeCondition(depth + 1, maxDepth),
-                    (Data.GetPercentage() < 0.5) ? CreateArithmeticCondition(depth + 1, maxDepth) : CreateAttributeCondition(depth + 1, maxDepth)
+                    GeneticOperators.arithmetic[dataObj.GetRandomIntExclusive(0, GeneticOperators.arithmetic.length)],
+                    (dataObj.GetPercentage() < 0.5) ? CreateArithmeticCondition(depth + 1, maxDepth,dataObj) : CreateAttributeCondition(depth + 1, maxDepth,dataObj),
+                    (dataObj.GetPercentage() < 0.5) ? CreateArithmeticCondition(depth + 1, maxDepth,dataObj) : CreateAttributeCondition(depth + 1, maxDepth,dataObj)
             );
         else
             return new Arithmetic(
-                    GeneticOperators.arithmetic[Data.GetRandomIntExclusive(0, GeneticOperators.arithmetic.length)],
-                    CreateAttributeCondition(depth+1, maxDepth),
-                    CreateAttributeCondition(depth+1, maxDepth)
+                    GeneticOperators.arithmetic[dataObj.GetRandomIntExclusive(0, GeneticOperators.arithmetic.length)],
+                    CreateAttributeCondition(depth+1, maxDepth,dataObj),
+                    CreateAttributeCondition(depth+1, maxDepth,dataObj)
             ); 
     }
 
-    private static Attribute CreateAttributeCondition(){
-        return new Attribute(GeneticOperators.attributes[Data.GetRandomIntExclusive(0,GeneticOperators.attributes.length)]);
+    private static Attribute CreateAttributeCondition(Data dataObj){
+        return new Attribute(dataObj.GetAttributesWithoutClass()[dataObj.GetRandomIntExclusive(0,dataObj.GetAttributesWithoutClass().length)]);
     }
     
-    private static Attribute CreateAttributeCondition(int depth, int maxDepth){
-        return new Attribute(GeneticOperators.attributes[Data.GetRandomIntExclusive(0, GeneticOperators.attributes.length)]);
+    private static Attribute CreateAttributeCondition(int depth, int maxDepth, Data dataObj){
+        return new Attribute(dataObj.GetAttributesWithoutClass()[dataObj.GetRandomIntExclusive(0,dataObj.GetAttributesWithoutClass().length)]);
     }
     
 }

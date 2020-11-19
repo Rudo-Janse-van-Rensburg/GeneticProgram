@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class Evolution {
+    private final Data          data;
     private Individual          bestIndividual;
     private final Generation    currentGeneration;
     private final Generation    nextGeneration;
@@ -12,7 +13,8 @@ public class Evolution {
     private final int           tournamentSize;
     private final int           maxGeneration;
     private final double        applicationRate;
-    public Evolution(int populationSize, int convergenceThreshold, int tournamentSize, int maxGeneration, double applicationRate) {
+    public Evolution(Data data, int populationSize, int convergenceThreshold, int tournamentSize, int maxGeneration, double applicationRate) {
+        this.data                   = data;
         this.convergenceThreshold   = convergenceThreshold;
         this.currentGeneration      = new Generation(populationSize);
         this.nextGeneration         = new Generation(populationSize);
@@ -67,47 +69,22 @@ public class Evolution {
         next.Clear();
         for (int i = 0; i < (int)Math.floor(next.GetPopulationSize()*applicationRate); i++) {
             Individual mutant  = new Individual(TournamentSelection(current));
-            GeneticOperators.Mutate(mutant);
-            next.Add(mutant, IndividualFactory.Fitness(mutant));
+            GeneticOperators.Mutate(mutant,this.data);
+            next.Add(mutant, IndividualFactory.Fitness(mutant,this.data));
         }
         
         while(!next.Full()){
-            Individual[] children   = GeneticOperators.Crossover(TournamentSelection(current), TournamentSelection(current));
+            Individual[] children   = GeneticOperators.Crossover(TournamentSelection(current), TournamentSelection(current),this.data);
             for (Individual children1 : children) {
-                next.Add(children1, IndividualFactory.Fitness(children1));
+                next.Add(children1, IndividualFactory.Fitness(children1,this.data));
             }
         }
         
         current.Clear(); 
         for (int i = 0; i < next.GetOccupancy(); i++) {  
-            current.Add(next.GetIndividual(i), IndividualFactory.Fitness(next.GetIndividual(i)));
+            current.Add(next.GetIndividual(i), IndividualFactory.Fitness(next.GetIndividual(i),this.data));
         }
-        next.Clear();
-        
-        /*
-        next.Clear();
-        while(!next.Full()){
-            //System.out.println(next.GetOccupancy()+"/"+next.GetPopulationSize());
-            if(Data.GetPercentage() > mutationChance){
-                //System.out.println("CROSSOVER");
-                Individual[] children   = GeneticOperators.Crossover(TournamentSelection(current), TournamentSelection(current));
-                for (int i = 0; i < children.length; i++) {
-                    next.Add(children[i], IndividualFactory.Fitness(children[i]));
-                }
-            }else{
-                //System.out.println("MUTATION");
-                Individual mutant       = new Individual(TournamentSelection(current));
-                GeneticOperators.Mutate(mutant);
-                next.Add(mutant, IndividualFactory.Fitness(mutant));
-            }
-        }
-        current.Clear();
-        //current.Clear();
-        //Print(0, next);
-        for (int i = 0; i < next.GetOccupancy(); i++) {  
-            current.Add(next.GetIndividual(i), IndividualFactory.Fitness(next.GetIndividual(i)));
-        }
-        next.Clear();*/
+        next.Clear(); 
     }
     
     private void InitialiseGeneration(Generation g){
@@ -115,11 +92,11 @@ public class Evolution {
         HashMap<String,Character> unique    = new HashMap();
         unique.clear();
         for (int i = 0; i < g.GetPopulationSize(); i++) {
-            individual  = IndividualFactory.PopOneOut();
+            individual  = IndividualFactory.PopOneOut(this.data);
             while(unique.containsKey(individual.ToString())){
-                individual  = IndividualFactory.PopOneOut();
+                individual  = IndividualFactory.PopOneOut(this.data);
             }
-            g.Add(individual, IndividualFactory.Fitness(individual));
+            g.Add(individual, IndividualFactory.Fitness(individual,this.data));
             unique.put(individual.ToString(), ' ');
         }
     }
@@ -129,8 +106,8 @@ public class Evolution {
         Generation tournament   = new Generation(tournamentSize);
         Individual candidate    = null;
         for (int i = 0; i < tournamentSize; i++) {
-            candidate   = g.GetIndividual(Data.GetRandomIntExclusive(0,g.GetPopulationSize()));
-            tournament.Add(candidate,IndividualFactory.Fitness(candidate));
+            candidate   = g.GetIndividual(this.data.GetRandomIntExclusive(0,g.GetPopulationSize()));
+            tournament.Add(candidate,IndividualFactory.Fitness(candidate,this.data));
         }
         candidate   = tournament.GetIndividual(0);
         tournament.Clear();

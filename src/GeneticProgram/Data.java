@@ -8,145 +8,145 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
-public class Data {
+public final class Data {
     
-    private static String[] attributes;
-    private static String className;
-    public static int classPosition;
-    private static HashMap<String, Integer> attributePosition;
-    private static HashMap<Integer, String> positionAttribute;
-    private static ArrayList<Double>[] data_list; 
-    private static double[][] data_array; 
-    //private static double[][] attributeMinMax;
-    private static int dataSize; 
-    private static Random random;
-    private static int numClasses;
+    private String[] attributesWithClass;
+    private String[] attributesWithoutClass;
     
-    public static void SetRandomSeed(long seed){
-        random  = new Random(seed);
+    private String className;
+    public int classPosition;
+    private HashMap<String, Integer> attributePosition;
+    private HashMap<Integer, String> positionAttribute;
+    private ArrayList<Double>[] data_list; 
+    private double[][] data_array; 
+    private int dataSize; 
+    private Random random;
+    private int numClasses;
+    
+    public Data(long seed, int numClasses, String filename, String classname){
+        this.random     = new Random(seed);
+        this.numClasses = numClasses;
+        this.ReadData(filename, classname);
     }
     
-    public static void SetNumberClasses(int numClasses){
-        Data.numClasses = numClasses;
-    }
-    public static int GetNumberClasses(){
-        return Data.numClasses;
-    } 
-    
-    public static int GetNumberAttributes(){
-        return attributes.length;
-    }
-    
-    public static int GetDataSize(){
-        return dataSize;
-    }
-    
-    public static String GetAttribute(int position){
-        return attributes[position];
-    }
-    
-    public static int GetPosition(String attribute){
-        return Data.attributePosition.get(attribute);
-    }
-    
-    public static void ReadData(String filename, String classname){
-        Data.className          = classname;
-        Data.random             = new Random(42069);
-        String line             = "";
-        String splitBy          = ",";
+    public void ReadData(String filename, String classname){
+        this.className                  = classname;
+        this.random                     = new Random(42069);
+        String line                     = "";
+        String splitBy                  = ",";
         String [] items;
         try{
-            BufferedReader br       = new BufferedReader(new FileReader(filename));
-            line                    = br.readLine();
-            items                   = line.split(splitBy);
-            Data.attributes         = new String[items.length-1];
-            Data.data_list          = new ArrayList[Data.attributes.length];
-            Data.attributePosition  = new HashMap<>();
-            Data.positionAttribute  = new HashMap<>();
-            //Data.attributeMinMax    = new double[Data.attributes.length][2];
-            for (int i = 0; i < Data.attributes.length; i++) {
-                Data.attributes[i]          = items[i+1]; 
-                Data.attributePosition.put(Data.attributes[i], i);
-                Data.positionAttribute.put(i,Data.attributes[i]);
-                Data.data_list[i]           = new ArrayList<>();
-                /*
-                Data.attributeMinMax[i][0]  = Integer.MAX_VALUE; 
-                Data.attributeMinMax[i][1]  = Integer.MIN_VALUE; 
-                */
+            BufferedReader br           = new BufferedReader(new FileReader(filename));
+            line                        = br.readLine();
+            items                       = line.split(splitBy);
+            this.attributesWithClass    = new String[items.length-1];//check this line
+            this.attributesWithoutClass = new String[this.attributesWithClass.length-1];
+            this.data_list              = new ArrayList[this.attributesWithClass.length];
+            this.attributePosition      = new HashMap<>();
+            this.positionAttribute      = new HashMap<>();
+            int position                = 0;
+            for (int i = 0; i < this.GetNumberAttributes(); i++) {
+                this.attributesWithClass[i] = items[i+1]; 
+                this.attributePosition.put(this.attributesWithClass[i], i);
+                this.positionAttribute.put(i,this.attributesWithClass[i]);
+                this.data_list[i]           = new ArrayList<>(); 
+                if(!attributesWithClass[i].equals(this.GetClass())){
+                    this.attributesWithoutClass[position++] = attributesWithClass[i];
+                }
             } 
-            int row                 = 0;
+            int row                     = 0;
             while((line = br.readLine()) != null){
                 items   = line.split(splitBy);
-                for (int i = 0; i < Data.attributes.length; i++) {
-                    Data.data_list[i].add(Double.parseDouble(items[i+1]));
-                    /*
-                    if(data_list[i].get(row) > Data.attributeMinMax[i][1]){
-                        Data.attributeMinMax[i][1] = data_list[i].get(row);
-                    }
-                    if(data_list[i].get(row) < Data.attributeMinMax[i][0]){
-                        Data.attributeMinMax[i][0] = data_list[i].get(row);
-                    }
-                    */
+                for (int i = 0; i < this.attributesWithClass.length; i++) {
+                    this.data_list[i].add(Double.parseDouble(items[i+1])); 
                 }
                 ++row;
             }
-            Data.dataSize           = row;
-            Data.data_array         = new double[dataSize][attributes.length];
-            for (int i = 0; i < Data.dataSize; i++) {
-                for (int j = 0; j < attributes.length; j++) {
-                    Data.data_array[i][j] = Data.data_list[j].get(i);
+            this.dataSize           = row;
+            this.data_array         = new double[dataSize][attributesWithClass.length];
+            for (int i = 0; i < this.dataSize; i++) {
+                for (int j = 0; j < attributesWithClass.length; j++) {
+                    this.data_array[i][j] = this.data_list[j].get(i);
                 }
             }
-            Data.data_list          = null;
+            this.data_list          = null;
         }catch(IOException e){
             System.err.println("Error: "+e.getMessage());
         }
     }
-    
-    public static String[] GetAttributes(){
-        return Data.attributes;
+        public void SetRandomSeed(long seed){
+        this.random  = new Random(seed);
     }
     
-    public static String GetClass(){
-        return Data.className;
+    public void SetNumberClasses(int numClasses){
+        this.numClasses = numClasses;
     }
     
-    /*
-    public static double[] GetMinMax(String attribute){
-        return Data.attributeMinMax[Data.attributePosition.get(attribute)];
-    }
-    */
+    public int GetNumberClasses(){
+        return this.numClasses;
+    } 
     
-    public static double[][] GetData(){
-        return Data.data_array;
+    public int GetNumberAttributes(){
+        return this.attributesWithClass.length;
     }
     
-    public static String ToString() {
-        return Arrays.toString(Data.attributes);
+    public int GetDataSize(){
+        return this.dataSize;
+    }
+    
+    public String GetAttribute(int position){
+        return attributesWithClass[position];
+    }
+    
+    public int GetPosition(String attribute){
+        return this.attributePosition.get(attribute);
+    }
+    
+    
+    
+    public String[] GetAttributes(){
+        return this.attributesWithClass;
+    }
+    
+    public String[] GetAttributesWithoutClass(){
+        return this.attributesWithoutClass;
+    }
+    
+    
+    public String GetClass(){
+        return this.className;
+    }
+     
+    public double[][] GetData(){
+        return this.data_array;
+    }
+    
+    public String ToString() {
+        return Arrays.toString(this.attributesWithClass);
     }
      
     
-    public static double GetPercentage(){
-        return Data.random.nextDouble();
+    public double GetPercentage(){
+        return this.random.nextDouble();
     } 
     
-    public static int GetRandomIntInclusive(double[] minmax){
+    public int GetRandomIntInclusive(double[] minmax){
         int min         = (int)Math.floor(minmax[0]); 
         int max         = (int)Math.floor( minmax[1]); 
-        return (int)Math.floor(Data.random.nextInt(max-min+1))+min;
+        return (int)Math.floor(this.random.nextInt(max-min+1))+min;
     }
     
-    public static int GetRandomIntExclusive(double[] minmax){
+    public int GetRandomIntExclusive(double[] minmax){
         int min         = (int)Math.floor(minmax[0]); 
         int max         = (int)Math.floor( minmax[1]);
-        return (int)Math.floor(Data.random.nextInt(max-min))+min;
+        return (int)Math.floor(this.random.nextInt(max-min))+min;
     }
     
-    public static int GetRandomIntInclusive(int min, int max){
-        return (int)Math.floor(Data.random.nextInt(max-min+1))+min;
+    public int GetRandomIntInclusive(int min, int max){
+        return (int)Math.floor(this.random.nextInt(max-min+1))+min;
     }
     
-    public static int GetRandomIntExclusive(int min, int max){
-        return (int)Math.floor(Data.random.nextInt(max-min))+min;
+    public int GetRandomIntExclusive(int min, int max){
+        return (int)Math.floor(this.random.nextInt(max-min))+min;
     } 
 }
