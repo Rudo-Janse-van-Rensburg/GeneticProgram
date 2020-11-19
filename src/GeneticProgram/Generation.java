@@ -8,10 +8,9 @@ public class Generation {
     private int                 occupancy;
     private final Individual[]  population;
     private final double[]      fitness;
-   
-    
+    private double bestFitness;
+    private Individual bestIndividual;
     public Generation(int populationSize){
-
         this.populationSize = populationSize;
         this.population     = new Individual[this.populationSize];
         this.fitness        = new double[this.populationSize];
@@ -23,6 +22,8 @@ public class Generation {
     }
     
     public void Clear(){
+        this.bestFitness    = 0;
+        this.bestIndividual = null;
         for (int i = 0; i < this.populationSize; i++) {
             this.fitness[i]     = 0;
             this.population[i]  = null;
@@ -44,38 +45,23 @@ public class Generation {
     }
     
     public void Add(Individual individual, double fitness){
-
-        if(occupancy < this.populationSize){
-            int pos = 0;
-            while(pos < this.occupancy && fitness <= this.fitness[pos]){
-                ++pos;
+        if(this.occupancy < this.populationSize){
+            if(fitness > bestFitness){
+                bestFitness     = fitness;
+                bestIndividual  = individual;
             }
-            for (int i = occupancy; i > pos; i--) {
-                this.fitness[i]     = this.fitness[i-1];
-                this.population[i]  = this.population[i-1];
-            }
-            this.population[pos]    = individual;
-            this.fitness[pos]       = fitness;
-            ++occupancy;
+            this.population[this.occupancy] = individual;
+            this.fitness[this.occupancy]    = fitness;
+            this.occupancy++;
         }
-        /*
-        int pos = 0;
-        while(pos < this.populationSize && fitness <= this.fitness[pos]){
-            ++pos; 
-        }
-        if(pos < this.populationSize){
-            for (int i = populationSize-1; i > pos; i--) {
-                this.fitness[i]     = this.fitness[i-1];
-                this.population[i]  = this.population[i-1];
-            }
-            this.population[pos]    = individual;
-            this.fitness[pos]       = fitness;
-        }
-        
-        
-        if(occupancy < populationSize)
-            ++occupancy;
-        */
+    }
+    
+    public Individual GetFittestIndividual(){
+        return bestIndividual;
+    }
+    
+    public double GetFittestScore(){ 
+        return bestFitness;
     }
     
     public Individual GetIndividual(int position){
