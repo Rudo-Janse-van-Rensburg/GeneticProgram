@@ -34,17 +34,23 @@ public class Main {
         Evolution evolution;
         Individual classifier;
         long start, end;
+        Data dataObj;
+        
+        /* 
         Data.SetNumberClasses(numClasses);
+        */
         for (int i = 0; i < 30; i++) {
             GeneticOperators.initialMaxDepth    = initialMaxDepth;
             GeneticOperators.maxDepth           = maxDepth;
             //TRAIN
             System.out.println("RUN #" + (i + 1));
             System.out.println(root + "train_" + i + ".csv");
-            Data.ReadData(root + "train_" + i + ".csv", classname);
-            Data.SetRandomSeed(i);
-            GeneticOperators.InitializeAttributes();
+            dataObj = new Data(i,numClasses, root + "train_" + i + ".csv", classname);
+            /*Data.ReadData(root + "train_" + i + ".csv", classname);
+            Data.SetRandomSeed(i);*/
+            GeneticOperators.InitializeAttributes(dataObj);
             evolution                           = new Evolution(
+                                                    dataObj,
                                                     populationSize,
                                                     convergenceThreshold,
                                                     tournamentSize,
@@ -56,18 +62,21 @@ public class Main {
             trainTime[i]                        = end - start;
             
             //TEST
+            dataObj = new Data(i,numClasses,root + "test_" + i + ".csv", classname);
+            /*
             Data.ReadData(root + "test_" + i + ".csv", classname);
-            System.out.println("\nClasses     :   " + Data.GetNumberClasses());
-            GeneticOperators.InitializeAttributes();
-            System.out.println("Fitness     :   " + IndividualFactory.Fitness(classifier));
-            System.out.println("F1          :   " + IndividualFactory.F1(classifier));
-            System.out.println("Precision   :   " + IndividualFactory.Precision(classifier));
-            System.out.println("Recall      :   " + IndividualFactory.Recall(classifier));
-            System.out.println("Accuracy    :   " + IndividualFactory.Accuracy(classifier));
-            results[0][i] = IndividualFactory.F1(classifier);
-            results[1][i] = IndividualFactory.Precision(classifier);
-            results[2][i] = IndividualFactory.Recall(classifier);
-            results[3][i] = IndividualFactory.Accuracy(classifier);
+            */
+            System.out.println("\nClasses     :   " + dataObj.GetNumberClasses());
+            GeneticOperators.InitializeAttributes(dataObj);
+            System.out.println("Fitness     :   " + IndividualFactory.Fitness(classifier,dataObj));
+            System.out.println("F1          :   " + IndividualFactory.F1(classifier,dataObj));
+            System.out.println("Precision   :   " + IndividualFactory.Precision(classifier,dataObj));
+            System.out.println("Recall      :   " + IndividualFactory.Recall(classifier,dataObj));
+            System.out.println("Accuracy    :   " + IndividualFactory.Accuracy(classifier,dataObj));
+            results[0][i] = IndividualFactory.F1(classifier,dataObj);
+            results[1][i] = IndividualFactory.Precision(classifier,dataObj);
+            results[2][i] = IndividualFactory.Recall(classifier,dataObj);
+            results[3][i] = IndividualFactory.Accuracy(classifier,dataObj);
         }
         try {
             System.out.println("SAVED " + outputFile);

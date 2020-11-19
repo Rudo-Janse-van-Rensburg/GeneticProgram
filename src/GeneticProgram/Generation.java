@@ -96,10 +96,10 @@ public class Generation {
         return this.fitness;
     }
     
-    public Individual[] GetTournament(int poolSize){
+    public Individual[] GetTournament(int poolSize,Data dataObj){
         Individual[] tournament = new Individual[poolSize];
         for (int i = 0; i < poolSize; i++){
-            tournament[i]           = this.population[Data.GetRandomIntExclusive(0,occupancy)];
+            tournament[i]           = this.population[dataObj.GetRandomIntExclusive(0,occupancy)];
         }
         return tournament;
     }
