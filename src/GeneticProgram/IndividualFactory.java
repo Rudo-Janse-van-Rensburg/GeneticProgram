@@ -146,13 +146,13 @@ public class IndividualFactory {
     private static boolean Resolve_Logical(double[] dataArr, Condition c, Data dataObj){
         boolean result  = false;
         switch(c.GetOperator()){
-            case "OR":
+            case '|':
                 result = (Met(dataArr,c.GetLeft(),dataObj) || Met(dataArr,c.GetRight(),dataObj));
                 break;
-            case "AND":
+            case '&':
                 result = (Met(dataArr,c.GetLeft(),dataObj) && Met(dataArr,c.GetRight(),dataObj));
                 break;
-            case "NOT":
+            case '!':
                 result = (!Met(dataArr,c.GetRight(),dataObj));
                 break;
         }
@@ -162,19 +162,19 @@ public class IndividualFactory {
     private static boolean Resolve_Relational(double[] dataArr, Condition c, Data dataObj){
         boolean result  = false;
         switch(c.GetOperator()){
-            case ">":
+            case '>':
                 result = (Resolve_Arithmetic(dataArr,c.GetLeft(), dataObj) > Resolve_Arithmetic(dataArr,c.GetRight(),dataObj));
                 break;
-            case "<":
+            case '<':
                 result = (Resolve_Arithmetic(dataArr,c.GetLeft(), dataObj) < Resolve_Arithmetic(dataArr,c.GetRight(), dataObj));
                 break;
-            case ">=":
+            case 'g':
                 result = (Resolve_Arithmetic(dataArr,c.GetLeft(), dataObj) >= Resolve_Arithmetic(dataArr,c.GetRight(), dataObj));
                 break;
-            case "<=":
+            case 'l':
                 result = (Resolve_Arithmetic(dataArr,c.GetLeft(), dataObj) <= Resolve_Arithmetic(dataArr,c.GetRight(), dataObj));
                 break;
-            case "==":
+            case '=':
                 result = (Resolve_Arithmetic(dataArr,c.GetLeft(), dataObj) == Resolve_Arithmetic(dataArr,c.GetRight(), dataObj));
                 break;
         }
@@ -187,16 +187,16 @@ public class IndividualFactory {
             result  = dataArr[dataObj.GetPosition(c.GetOperator())];
         }else{
             switch(c.GetOperator()){
-                case "+":
+                case '+':
                     result  = Resolve_Arithmetic(dataArr, c.GetLeft(), dataObj) + Resolve_Arithmetic(dataArr, c.GetRight(),dataObj);
                     break;
-                case "-":
+                case '-':
                     result  = Resolve_Arithmetic(dataArr, c.GetLeft(), dataObj) - Resolve_Arithmetic(dataArr, c.GetRight(), dataObj);
                     break;
-                case "*":
+                case '*':
                     result  = Resolve_Arithmetic(dataArr, c.GetLeft(), dataObj) * Resolve_Arithmetic(dataArr, c.GetRight(), dataObj);
                     break;
-                case "/":
+                case '/':
                     result  = Resolve_Arithmetic(dataArr, c.GetLeft(), dataObj) / Resolve_Arithmetic(dataArr, c.GetRight(), dataObj);
                     break;
             }

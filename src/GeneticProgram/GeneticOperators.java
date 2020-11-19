@@ -7,7 +7,7 @@ public class GeneticOperators {
     public static int initialMaxDepth                   = 5;
     
     public static int maxDepth                          = 10;
-            
+    /*    
     private final static String[] logical               = new String[]{
         "AND", "OR", "NOT"
     };
@@ -19,53 +19,39 @@ public class GeneticOperators {
     private final static String[] arithmetic            = new String[]{
         "+", "-", "*", "/"
     };
-    
-    
-    /*
-    private final static String[] conditionTypes        = new String[]{
-        "Logical",
-        "Relational",
-        "Arithmetic",
-        "Attribute"
-    };
-    
-    private final static String[] ifTypes               = new String[]{
-        "If",
-        "Class"
-    };
-    
-    private final static String[][] conditionCompatible = new String[][]{
-        {"Logical","Relational"},
-        {"Relational","Logical"},
-        {"Arithmetic","Attribute"},
-        {"Attribute","Arithmetic"} 
-    }; 
-    
-    private final static String[][] ifCompatible        = new String[][]{
-        {"If","Class"},
-        {"Class","If"}
-    }; 
     */
-    private final static char[] conditionTypes        = new char[]{
+    private final static char[] logical                 = new char[]{
+        '&','|','!'
+    };
+    
+    private final static char[] relational              = new char[]{
+        '>','<','g','l','='
+    };
+        
+    private final static char[] arithmetic              = new char[]{
+        '+','-','*','/'
+    };
+    
+    private final static char[] conditionTypes          = new char[]{
         'L',
         'R',
         'A',
         'a'
     };
     
-    private final static char[] ifTypes               = new char[]{
+    private final static char[] ifTypes                 = new char[]{
         'I',
         'C'
     };
     
-    private final static char[][] conditionCompatible = new char[][]{
+    private final static char[][] conditionCompatible   = new char[][]{
         {'L','R'},
         {'R','L'},
         {'A','a'},
         {'a','A'} 
     }; 
     
-    private final static char[][] ifCompatible        = new char[][]{
+    private final static char[][] ifCompatible          = new char[][]{
         {'I','C'},
         {'C','I'}
     };
@@ -125,16 +111,14 @@ public class GeneticOperators {
     
     private static void MutateCondition(Condition c, char [] compatible, Data dataObj){
         int newTypeIndex    = dataObj.GetRandomIntExclusive(0, compatible.length);
-        char newType      = compatible[newTypeIndex];
-        //System.out.println(c.GetType()+" -> "+newType);
-        //System.out.print(c.GetOperator()+" -> ");
+        char newType      = compatible[newTypeIndex]; 
         c.SetType(newType);
-        String newOperator  = "";
+        char newOperator;
         switch (newType) {
             case 'L':
                 newOperator  = logical[dataObj.GetRandomIntExclusive(0,logical.length)];
                 c.SetOperator(newOperator);
-                if(!c.GetOperator().equals("NOT")){
+                if(c.GetOperator() != '!'){
                     c.SetLeft((dataObj.GetPercentage() < 0.5)? CreateLogicalCondition(0,maxDepth,dataObj) : CreateRelationalCondition(0,maxDepth,dataObj));
                     c.SetRight((dataObj.GetPercentage() < 0.5)? CreateLogicalCondition(0,maxDepth,dataObj) : CreateRelationalCondition(0,maxDepth,dataObj));
                 }else{
@@ -310,7 +294,7 @@ public class GeneticOperators {
             condition.add(current);
         }
         if(current.GetType() != 'a'){
-            if(!current.GetOperator().equals("NOT")){
+            if(current.GetOperator() != '!'){
                 TraverseCondition(condition, current.GetLeft(), types);
             }
             TraverseCondition(condition, current.GetRight(), types);
@@ -358,7 +342,7 @@ public class GeneticOperators {
                 switch(c.GetType()){
                     case 'L':
                         switch(c.GetOperator()){
-                            case "NOT":
+                            case '!':
                                 TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(),dataObj);
                                 break;
                             default:
@@ -389,7 +373,7 @@ public class GeneticOperators {
                         switch(c.GetType()){
                             case 'L':
                                 switch(c.GetOperator()){
-                                    case "NOT":
+                                    case '!':
                                         TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(), dataObj);
                                         break;
                                     default:
@@ -508,14 +492,14 @@ public class GeneticOperators {
             switch(c.GetType()){
                 case 'L':
                     switch(c.GetOperator()){
-                        case "NOT":
+                        case '!':
                             TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(),dataObj);
                             break;
-                        case "AND":
+                        case '&':
                             TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(),dataObj);
                             TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(),dataObj);
                             break;
-                        case "OR":
+                        case '|':
                             TrimCondition(c.GetLeft(), depth + 1, maxDepth, c.GetType(),dataObj);
                             TrimCondition(c.GetRight(), depth + 1, maxDepth, c.GetType(),dataObj);
                             break;
@@ -539,8 +523,8 @@ public class GeneticOperators {
 
     private static Logical CreateLogicalCondition(Data dataObj){
         double percentage           = dataObj.GetPercentage();
-        String operator             = logical[dataObj.GetRandomIntExclusive(0,logical.length)];
-        if(!operator.equals("NOT")){
+        char operator             = logical[dataObj.GetRandomIntExclusive(0,logical.length)];
+        if(operator != '!'){
             return new Logical(
                     operator,
                     (dataObj.GetPercentage() < 0.5) ? CreateLogicalCondition(dataObj) : CreateRelationalCondition(dataObj),
@@ -584,7 +568,7 @@ public class GeneticOperators {
     }
 
     private static Relational CreateRelationalCondition(Data dataObj){
-        String operator                 = relational[dataObj.GetRandomIntExclusive(0,relational.length)];
+        char  operator                 = relational[dataObj.GetRandomIntExclusive(0,relational.length)];
         return new Relational(
                 operator,
                 (dataObj.GetPercentage() < 0.5) ? CreateArithmeticCondition(dataObj) : CreateAttributeCondition(dataObj),
@@ -608,7 +592,7 @@ public class GeneticOperators {
     }
 
     private static Arithmetic CreateArithmeticCondition(Data dataObj){
-        String operator                 = arithmetic[dataObj.GetRandomIntExclusive(0,arithmetic.length)];
+        char operator                 = arithmetic[dataObj.GetRandomIntExclusive(0,arithmetic.length)];
         return new Arithmetic(
                 operator,
                 (dataObj.GetPercentage() < 0.5) ? CreateArithmeticCondition(dataObj) : CreateAttributeCondition(dataObj),

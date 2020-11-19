@@ -4,9 +4,9 @@ public abstract class Condition extends Primitive {
 
     private Condition lhs;
     private Condition rhs;
-    private String operator;
+    private char operator;
 
-    protected Condition(char type, String operator, Condition lhs, Condition rhs) {
+    protected Condition(char type, char operator, Condition lhs, Condition rhs) {
         super(type);
         this.operator = operator;
         this.lhs = lhs;
@@ -19,7 +19,7 @@ public abstract class Condition extends Primitive {
         switch(c.GetType()){
             case 'L':
                 switch(c.GetOperator()){
-                    case "NOT":
+                    case '!':
                         switch(c.rhs.GetType()){
                             case 'L':
                                 this.rhs    = new Logical(c.rhs);
@@ -108,11 +108,11 @@ public abstract class Condition extends Primitive {
         return this.rhs;
     }
 
-    public String GetOperator() {
+    public char GetOperator() {
         return this.operator;
     }
 
-    public void SetOperator(String operator) {
+    public void SetOperator(char operator) {
         this.operator = operator;
     }
 
@@ -121,7 +121,7 @@ public abstract class Condition extends Primitive {
         switch(this.GetType()){
             case 'L':
                 switch(this.GetOperator()){
-                    case "NOT":
+                    case '!':
                         string  = "( "+operator+" "+rhs.ToString() + ")";
                         break;
                     default:
@@ -136,7 +136,7 @@ public abstract class Condition extends Primitive {
                 string  = "( "+lhs.ToString()+" "+operator+" "+rhs.ToString()+" )";
                 break;
             case 'a':
-                string  = operator;
+                string  = operator+ "";
                 break;
             default:
                 string  = "( "+lhs.ToString()+" "+operator+" "+rhs.ToString()+" )"; 

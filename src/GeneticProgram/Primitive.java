@@ -1,4 +1,3 @@
- 
 package GeneticProgram;
  
 public abstract class Primitive {

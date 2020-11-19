@@ -10,7 +10,7 @@ public class Attribute extends Arithmetic {
     /**
      * @param attribute_name - an attribute 
      */
-    public Attribute(String attribute_name){
+    public Attribute(char attribute_name){
         super('a',attribute_name,null,null); 
     } 
     
