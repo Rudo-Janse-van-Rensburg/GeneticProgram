@@ -10,24 +10,17 @@ import java.util.Random;
 
 public final class Data {
     
-    private String[] attributesWithClass;
-    private char[] attributesSymbolsWithClass;
-    private String[] attributesWithoutClass;
-    private char[] attributesSymbolsWithoutClass;
-    
-    private String className;
     private char classSymbol;
-    public int classPosition;
-    private HashMap<String, Integer> attributePosition;
-    private HashMap<Character, Integer> symbolPosition;
-    private HashMap<Integer, String> positionAttribute;
-    private HashMap<String, Character> attributeSymbol;
+    private char[] symbolsWithoutClass;
+    private HashMap<String, Character> hmAttributeSymbol;
+    private HashMap<Character, Integer> hmSymbolPosition;
     private ArrayList<Double>[] data_list; 
     private double[][] data_array; 
     private int dataSize; 
     private Random random;
     private int numClasses;
     private int numberAttributes;
+    
     public Data(long seed, int numClasses, String filename, String classname){
         this.random     = new Random(seed);
         this.numClasses = numClasses;
@@ -35,7 +28,10 @@ public final class Data {
     }
     
     public void ReadData(String filename, String classname){
-        this.className                  = classname;
+        /*
+            Remove unwanted attributes effectively
+            
+        */
         this.random                     = new Random(42069);
         String line                     = "";
         String splitBy                  = ",";
@@ -44,46 +40,35 @@ public final class Data {
             BufferedReader br                   = new BufferedReader(new FileReader(filename));
             line                                = br.readLine();
             items                               = line.split(splitBy);
-            this.numberAttributes               = items.length-1;
-            this.attributesWithClass            = new String[this.numberAttributes];//check this line
-            this.attributesSymbolsWithClass     = new char[this.numberAttributes];
-            this.attributesWithoutClass         = new String[this.numberAttributes-1];
-            this.attributesSymbolsWithoutClass  = new char[this.numberAttributes-1];
-            this.data_list                      = new ArrayList[this.numberAttributes];
-            this.attributePosition              = new HashMap<>();
-            this.symbolPosition                 = new HashMap<>();
-            this.positionAttribute              = new HashMap<>();
-            this.attributeSymbol                = new HashMap<>();
+            this.numberAttributes               = items.length;
+            this.symbolsWithoutClass            = new char[numberAttributes-1];
+            this.hmAttributeSymbol              = new HashMap<>();
+            this.hmSymbolPosition               = new HashMap<>();
+            this.data_list                      = new ArrayList[this.numberAttributes]; 
             int position                        = 0;
-            
             for (int i = 0; i < this.GetNumberAttributes(); i++) {
-                this.attributesWithClass[i]         = items[i+1];
-                this.attributesSymbolsWithClass[i]  = (char) ('A'+i);  
-                this.attributeSymbol.put(this.attributesWithClass[i], this.attributesSymbolsWithClass[i]);
-                this.symbolPosition.put(this.attributesSymbolsWithClass[i], i);
-                this.attributePosition.put(this.attributesWithClass[i], i);
-                this.positionAttribute.put(i,this.attributesWithClass[i]);
+                this.hmAttributeSymbol.put(items[i], (char)('A'+i));
+                this.hmSymbolPosition.put(hmAttributeSymbol.get(items[i]), i);  
                 this.data_list[i]           = new ArrayList<>(); 
-                if(!attributesWithClass[i].equals(this.GetClass())){
-                    this.attributesWithoutClass[position] = attributesWithClass[i];
-                    this.attributesSymbolsWithoutClass[position] = this.attributesSymbolsWithClass[i];
+                if(!items[i].equals(classname)){
+                    this.symbolsWithoutClass[position]  =   this.hmAttributeSymbol.get(items[i]); 
                     ++position;
                 }else{
-                    this.classSymbol    = this.attributesSymbolsWithClass[i];
+                    this.classSymbol    = hmAttributeSymbol.get(classname);
                 }
             } 
             int row                     = 0;
             while((line = br.readLine()) != null){
                 items   = line.split(splitBy);
-                for (int i = 0; i < this.attributesWithClass.length; i++) {
-                    this.data_list[i].add(Double.parseDouble(items[i+1])); 
+                for (int i = 0; i < this.numberAttributes; i++) {
+                    this.data_list[i].add(Double.parseDouble(items[i])); 
                 }
                 ++row;
             }
             this.dataSize           = row;
-            this.data_array         = new double[dataSize][attributesWithClass.length];
+            this.data_array         = new double[dataSize][this.numberAttributes];
             for (int i = 0; i < this.dataSize; i++) {
-                for (int j = 0; j < attributesWithClass.length; j++) {
+                for (int j = 0; j < this.numberAttributes; j++) {
                     this.data_array[i][j] = this.data_list[j].get(i);
                 }
             }
@@ -92,75 +77,39 @@ public final class Data {
             System.err.println("Error: "+e.getMessage());
         }
     }
-    
-    public void SetRandomSeed(long seed){
-        this.random  = new Random(seed);
-    }
-    
-    public void SetNumberClasses(int numClasses){
-        this.numClasses = numClasses;
-    }
-    
+
     public int GetNumberClasses(){
         return this.numClasses;
     } 
     
     public int GetNumberAttributes(){
-        return this.attributesWithClass.length;
+        return this.numberAttributes;
     }
     
     public int GetDataSize(){
         return this.dataSize;
+    } 
+    
+    public int GetPosition(char symbol){
+        return this.hmSymbolPosition.get(symbol);
     }
     
-    public String GetAttribute(int position){
-        return attributesWithClass[position];
-    }
+    public char[] GetSymbolsWithoutClass(){
+        return this.symbolsWithoutClass;
+    } 
     
-    public int GetPosition(String attribute){
-        return this.attributePosition.get(attribute);
-    }
-    
-    public int GetPosition(char attribute){
-        return this.symbolPosition.get(attribute);
-    }
-    
-    public String[] GetAttributes(){
-        return this.attributesWithClass;
-    }
-    
-    public char[] GetAttributesWithoutClass(){
-        return this.attributesSymbolsWithoutClass;
-    }
-    
-    public String GetClass(){
-        return this.className;
+    public char GetClassSymbol(){
+        return this.classSymbol;
     }
      
     public double[][] GetData(){
         return this.data_array;
-    }
-    
-    public String ToString() {
-        return Arrays.toString(this.attributesWithClass);
-    }
+    } 
     
     public double GetPercentage(){
         return this.random.nextDouble();
     } 
-    
-    public int GetRandomIntInclusive(double[] minmax){
-        int min         = (int)Math.floor(minmax[0]); 
-        int max         = (int)Math.floor( minmax[1]); 
-        return (int)Math.floor(this.random.nextInt(max-min+1))+min;
-    }
-    
-    public int GetRandomIntExclusive(double[] minmax){
-        int min         = (int)Math.floor(minmax[0]); 
-        int max         = (int)Math.floor( minmax[1]);
-        return (int)Math.floor(this.random.nextInt(max-min))+min;
-    }
-    
+ 
     public int GetRandomIntInclusive(int min, int max){
         return (int)Math.floor(this.random.nextInt(max-min+1))+min;
     }

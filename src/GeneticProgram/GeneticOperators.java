@@ -6,20 +6,8 @@ public class GeneticOperators {
     
     public static int initialMaxDepth                   = 5;
     
-    public static int maxDepth                          = 10;
-    /*    
-    private final static String[] logical               = new String[]{
-        "AND", "OR", "NOT"
-    };
+    public static int maxDepth                          = 10; 
     
-    private final static String[] relational            = new String[]{
-        ">", "<", ">=", "<=", "=="
-    };
-    
-    private final static String[] arithmetic            = new String[]{
-        "+", "-", "*", "/"
-    };
-    */
     private final static char[] logical                 = new char[]{
         '&','|','!'
     };
@@ -55,18 +43,7 @@ public class GeneticOperators {
         {'I','C'},
         {'C','I'}
     };
-    
-    /*
-    private static String[] attributes;
-
-    public static void InitializeAttributes(Data dataObj) {
-        attributes = new String[dataObj.GetNumberAttributes()-1];
-        int pos = 0;
-        for (int i = 0; i < dataObj.GetNumberAttributes(); i++) 
-            if (!dataObj.GetAttribute(i).equalsIgnoreCase(dataObj.GetClass())) 
-                GeneticOperators.attributes[pos++] = dataObj.GetAttribute(i);
-    } 
-    */
+     
     public static If Grow(int depth, int maxDepth, Data dataObj) {
         if (depth < maxDepth) {
             if (depth == 0 || dataObj.GetPercentage() <= 0.5) {
@@ -139,7 +116,7 @@ public class GeneticOperators {
                 c.SetRight((dataObj.GetPercentage() < 0.5)? CreateArithmeticCondition(0,maxDepth,dataObj) : CreateAttributeCondition(0,maxDepth,dataObj));
                 break;
             case 'a':
-                newOperator = dataObj.GetAttributesWithoutClass()[dataObj.GetRandomIntExclusive(0, dataObj.GetAttributesWithoutClass().length)];
+                newOperator = dataObj.GetSymbolsWithoutClass()[dataObj.GetRandomIntExclusive(0, dataObj.GetSymbolsWithoutClass().length)];
                 c.SetOperator(newOperator);
                 c.SetLeft(null);
                 c.SetRight(null);
@@ -464,7 +441,7 @@ public class GeneticOperators {
                         switch(c.GetType()){
                             case 'A':
                                 c.SetType('a');
-                                c.SetOperator(dataObj.GetAttributesWithoutClass()[dataObj.GetRandomIntExclusive(0, dataObj.GetAttributesWithoutClass().length)]);
+                                c.SetOperator(dataObj.GetSymbolsWithoutClass()[dataObj.GetRandomIntExclusive(0, dataObj.GetSymbolsWithoutClass().length)]);
                                 c.SetLeft(null);
                                 c.SetRight(null);
                                 break;
@@ -477,7 +454,7 @@ public class GeneticOperators {
                         switch(c.GetType()){
                             case 'A':
                                 c.SetType('a');
-                                c.SetOperator(dataObj.GetAttributesWithoutClass()[dataObj.GetRandomIntExclusive(0,dataObj.GetAttributesWithoutClass().length)]);
+                                c.SetOperator(dataObj.GetSymbolsWithoutClass()[dataObj.GetRandomIntExclusive(0,dataObj.GetSymbolsWithoutClass().length)]);
                                 c.SetLeft(null);
                                 c.SetRight(null);
                                 break;
@@ -617,11 +594,11 @@ public class GeneticOperators {
     }
 
     private static Attribute CreateAttributeCondition(Data dataObj){
-        return new Attribute(dataObj.GetAttributesWithoutClass()[dataObj.GetRandomIntExclusive(0,dataObj.GetAttributesWithoutClass().length)]);
+        return new Attribute(dataObj.GetSymbolsWithoutClass()[dataObj.GetRandomIntExclusive(0,dataObj.GetSymbolsWithoutClass().length)]);
     }
     
     private static Attribute CreateAttributeCondition(int depth, int maxDepth, Data dataObj){
-        return new Attribute(dataObj.GetAttributesWithoutClass()[dataObj.GetRandomIntExclusive(0,dataObj.GetAttributesWithoutClass().length)]);
+        return new Attribute(dataObj.GetSymbolsWithoutClass()[dataObj.GetRandomIntExclusive(0,dataObj.GetSymbolsWithoutClass().length)]);
     }
     
 }

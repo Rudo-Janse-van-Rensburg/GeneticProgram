@@ -27,7 +27,7 @@ public class IndividualFactory {
         double targetClass;
         double predictedClass;
         for (int i = 0; i < dataObj.GetDataSize(); i++) {
-            targetClass         = dataObj.GetData()[i][dataObj.GetPosition(dataObj.GetClass())];
+            targetClass         = dataObj.GetData()[i][dataObj.GetPosition(dataObj.GetClassSymbol())];
             predictedClass      = Resolve(dataObj.GetData()[i],individual.GetRoot(),dataObj);
             if(predictedClass == targetClass){
                 truePositives[(int) Math.floor(targetClass)]        += 1;
@@ -68,7 +68,7 @@ public class IndividualFactory {
             for (int j = 0; j < dataObj.GetDataSize(); j++) {
                 double determinedClass  = Resolve(dataObj.GetData()[j],individual.GetRoot(),dataObj);
                 if(determinedClass == expectedClass){
-                    if(dataObj.GetData()[j][dataObj.GetPosition(dataObj.GetClass())] == expectedClass){
+                    if(dataObj.GetData()[j][dataObj.GetPosition(dataObj.GetClassSymbol())] == expectedClass){
                         truePositives += 1;
                     }else{
                         falsePositives += 1;
@@ -95,11 +95,11 @@ public class IndividualFactory {
             for (int j = 0; j < dataObj.GetDataSize(); j++) {
                 double determinedClass  = Resolve(dataObj.GetData()[j],individual.GetRoot(),dataObj);
                 if(determinedClass == expectedClass){
-                    if(dataObj.GetData()[j][dataObj.GetPosition(dataObj.GetClass())] == expectedClass){
+                    if(dataObj.GetData()[j][dataObj.GetPosition(dataObj.GetClassSymbol())] == expectedClass){
                         truePositives += 1;
                     }
                 }else{
-                    if(dataObj.GetData()[j][dataObj.GetPosition(dataObj.GetClass())] == expectedClass){
+                    if(dataObj.GetData()[j][dataObj.GetPosition(dataObj.GetClassSymbol())] == expectedClass){
                         falseNegatives += 1;
                     }
                 }
@@ -117,7 +117,7 @@ public class IndividualFactory {
         int numberCorrectPredictions    = 0;
         int numberPredictions           = dataObj.GetDataSize();
         for (int i = 0; i < numberPredictions; i++) {
-            if(Resolve(dataObj.GetData()[i],individual.GetRoot(),dataObj)  ==  dataObj.GetData()[i][dataObj.GetPosition(dataObj.GetClass())]){
+            if(Resolve(dataObj.GetData()[i],individual.GetRoot(),dataObj)  ==  dataObj.GetData()[i][dataObj.GetPosition(dataObj.GetClassSymbol())]){
                 ++numberCorrectPredictions;
             }
         }
