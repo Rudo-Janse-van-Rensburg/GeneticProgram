@@ -9,7 +9,7 @@ public class Logical extends Condition {
      * @param l
      */
     public Logical(String operator, Logical l,Logical r){
-        super("Logical",operator,l,r);
+        super('L',operator,l,r);
     }
     
     public Logical(Condition c){
@@ -21,11 +21,11 @@ public class Logical extends Condition {
      * @param r - either a relational operator(>,<,>=,<=,==) or another logical condition(NOT)
      */
     public Logical(String operator, Logical r){
-        super("Logical",operator,null,r);
+        super('L',operator,null,r);
         
     }
     
-    protected Logical(String type,String operator, Logical l, Logical r){
+    protected Logical(char type,String operator, Logical l, Logical r){
         super(type,operator,l,r);
     } 
 

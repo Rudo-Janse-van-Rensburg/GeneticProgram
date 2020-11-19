@@ -36,9 +36,7 @@ public class IndividualFactory {
                 falseNegatives[(int) Math.floor(targetClass)]       += 1;
             }
         }
-        double totalTruePositives   = 0;
         for (int i = 0; i < numberOfClasses; i++) {
-            totalTruePositives += truePositives[i];
             if(truePositives[i] > 0 || falsePositives[i] > 0){
                 precision   += truePositives[i]/(truePositives[i]+falsePositives[i]);
             }
@@ -46,25 +44,10 @@ public class IndividualFactory {
                  recall      += truePositives[i]/(truePositives[i]+falseNegatives[i]);
             }
         }
-        //accuracy    = totalTruePositives/Data.GetDataSize();
         precision   /= numberOfClasses;
         recall      /= numberOfClasses;
         f1          = 2 * (precision * recall)/(precision + recall);
-        
-        
-        return f1;
-        /*
-        return (precision + recall + f1 + accuracy)/ 4;
-        
-        
-        double correct = 0;
-        for (int i = 0; i < Data.GetDataSize(); i++) {
-            if(Resolve(Data.GetData()[i],individual.GetRoot())  ==  Data.GetData()[i][Data.GetPosition(Data.GetClass())]){
-                ++correct;
-            }
-        }
-        return correct/Data.GetDataSize();
-        */
+        return f1; 
     } 
     
     public static double F1(Individual individual,Data dataObj){
@@ -142,7 +125,7 @@ public class IndividualFactory {
     }
     
     private static double Resolve(double[] dataArr, If i, Data dataObj){
-        if(i.GetType().equals("Class"))
+        if(i.GetType() == 'C')
             return i.GetClass();
         else if(Met(dataArr,i.GetCondition(), dataObj))
             return Resolve(dataArr,i.GetTrue(), dataObj);
@@ -152,9 +135,9 @@ public class IndividualFactory {
     
     private static boolean Met(double[] dataArr, Condition c, Data dataObj){
         boolean metCondition = false;
-        if(c.GetType().equals("Logical")){
+        if(c.GetType() == 'L'){
             metCondition = Resolve_Logical(dataArr, c, dataObj);
-        }else if(c.GetType().equals("Relational")){
+        }else if(c.GetType() == 'R'){
             metCondition = Resolve_Relational(dataArr, c, dataObj);
         }
         return metCondition; 
@@ -200,7 +183,7 @@ public class IndividualFactory {
     
     private static double Resolve_Arithmetic(double[] dataArr, Condition c, Data dataObj){
         double result = 0;
-        if(c.GetType().equals("Attribute")){
+        if(c.GetType() == 'a'){
             result  = dataArr[dataObj.GetPosition(c.GetOperator())];
         }else{
             switch(c.GetOperator()){

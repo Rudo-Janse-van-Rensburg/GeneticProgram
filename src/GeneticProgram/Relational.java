@@ -8,10 +8,10 @@ public class Relational extends Logical{
      * @param l - either a relational operator(>,<,>=,<=,==), arithmetic(+,-,*,/) or Attribute
      */
     public Relational(String operator, Relational l, Relational r){
-        super("Relational",operator,l,r);
+        super('R',operator,l,r);
     }
     
-    protected Relational(String type,String operator, Relational l, Relational r){
+    protected Relational(char type,String operator, Relational l, Relational r){
         super(type,operator,l,r);
     }
     

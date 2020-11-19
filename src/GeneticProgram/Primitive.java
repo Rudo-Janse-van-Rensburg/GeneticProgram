@@ -3,17 +3,17 @@ package GeneticProgram;
  
 public abstract class Primitive {
     
-    private String type;
+    private char type;
     
-    protected Primitive(String type){
+    protected Primitive(char type){
         this.type   = type;
     }
     
-    public String GetType(){
+    public char GetType(){
         return this.type;
     }  
     
-    public void SetType(String type){
+    public void SetType(char type){
         this.type   = type;
     }
     

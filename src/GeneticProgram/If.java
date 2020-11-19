@@ -6,17 +6,15 @@ public class If extends Primitive{
     private If f;
     private Condition condition;
     private double cls;
-    
-    //protected If() {}
-    
+     
     public If(Condition c, If t, If f){
-        super("If");
+        super('I');
         this.condition  = c;
         this.t          = t;
         this.f          = f;
     } 
     
-    protected If(String type,double cls){
+    protected If(char type,double cls){
         super(type);
         this.cls        = cls;
         this.t          = null;
@@ -29,6 +27,23 @@ public class If extends Primitive{
         this.t          = null;
         this.f          = null;
         this.condition  = null;
+        if(p.GetType() == 'I'){
+            this.t          = new If(p.t);
+            this.f          = new If(p.f);
+            
+            switch(p.GetCondition().GetType()){
+                case 'L':
+                    SetCondition(new Logical(p.GetCondition()));
+                    break;
+                case 'R':
+                    SetCondition(new Relational(p.GetCondition()));
+                    break;
+                default:
+                    this.condition = null;
+            }
+        }
+        this.cls        = p.cls;
+        /*
         if(p.GetType().equals("If")){
             this.t          = (p.GetType().equals("If")) ? new If(p.t) : null;
             this.f          = (p.GetType().equals("If")) ? new If(p.f) : null;
@@ -46,6 +61,7 @@ public class If extends Primitive{
         }
 
         this.cls        = p.cls;
+        */
     }
     
     public Condition GetCondition(){
@@ -81,10 +97,16 @@ public class If extends Primitive{
     }
 
     public String ToString(){
-        
+        return (
+                (this.GetType() == 'C') 
+                    ? this.cls + "" 
+                    : "if ("+condition.ToString()+"){\n"+t.ToString()+"\n"+f.ToString()+"}"
+                );
+        /*
         return (this.GetType().equals("Class")) 
                 ? this.cls + "" 
                 : "if ("+condition.ToString()+"){\n"+t.ToString()+"\n"+f.ToString()+"}";
+        */
     }
     
 }

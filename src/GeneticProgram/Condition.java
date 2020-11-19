@@ -6,7 +6,7 @@ public abstract class Condition extends Primitive {
     private Condition rhs;
     private String operator;
 
-    protected Condition(String type, String operator, Condition lhs, Condition rhs) {
+    protected Condition(char type, String operator, Condition lhs, Condition rhs) {
         super(type);
         this.operator = operator;
         this.lhs = lhs;
@@ -17,75 +17,75 @@ public abstract class Condition extends Primitive {
         super(c.GetType());
         this.operator = c.operator;
         switch(c.GetType()){
-            case "Logical":
+            case 'L':
                 switch(c.GetOperator()){
                     case "NOT":
                         switch(c.rhs.GetType()){
-                            case "Logical":
+                            case 'L':
                                 this.rhs    = new Logical(c.rhs);
                                 break;
-                            case "Relational":
+                            case 'R':
                                 this.rhs    = new Relational(c.rhs);
                                 break;
                         }
                         break;
                     default:
                         switch(c.rhs.GetType()){
-                            case "Logical":
+                            case 'L':
                                 this.rhs    = new Logical(c.rhs);
                                 break;
-                            case "Relational":
+                            case 'R':
                                 this.rhs    = new Relational(c.rhs);
                                 break;
                         }
                         switch(c.lhs.GetType()){
-                            case "Logical":
+                            case 'L':
                                 this.lhs    = new Logical(c.lhs);
                                 break;
-                            case "Relational":
+                            case 'R':
                                 this.lhs    = new Relational(c.lhs);
                                 break;
                         }
                         break; 
                 }
                 break;
-            case "Relational":
+            case 'R':
                 switch(c.lhs.GetType()){
-                    case "Arithmetic":
+                    case 'A':
                         this.lhs    = new Arithmetic(c.lhs);
                         break;
-                    case "Attribute":
+                    case 'a':
                         this.lhs    = new Attribute(c.lhs);
                         break;
                 }
                 switch(c.rhs.GetType()){
-                    case "Arithmetic":
+                    case 'A':
                         this.rhs    = new Arithmetic(c.rhs);
                         break;
-                    case "Attribute":
+                    case 'a':
                         this.rhs    = new Attribute(c.rhs);
                         break;
                 }
                 break;
-            case "Arithmetic":
+            case 'A':
                 switch(c.lhs.GetType()){
-                    case "Arithmetic":
+                    case 'A':
                         this.lhs    = new Arithmetic(c.lhs);
                         break;
-                    case "Attribute":
+                    case 'a':
                         this.lhs    = new Attribute(c.lhs);
                         break;
                 }
                 switch(c.rhs.GetType()){
-                    case "Arithmetic":
+                    case 'A':
                         this.rhs    = new Arithmetic(c.rhs);
                         break;
-                    case "Attribute":
+                    case 'a':
                         this.rhs    = new Attribute(c.rhs);
                         break;
                 }
                 break;
-            case "Attribute":
+            case 'a':
                 this.lhs    = null;
                 this.rhs    = null;
                 break;
@@ -119,7 +119,7 @@ public abstract class Condition extends Primitive {
     public String ToString() {
         String string = "";
         switch(this.GetType()){
-            case "Logical":
+            case 'L':
                 switch(this.GetOperator()){
                     case "NOT":
                         string  = "( "+operator+" "+rhs.ToString() + ")";
@@ -129,13 +129,13 @@ public abstract class Condition extends Primitive {
                         break;
                 }
                 break;
-            case "Relational":
+            case 'R':
                 string  = "( "+lhs.ToString()+" "+operator+" "+rhs.ToString()+" )"; 
                 break;
-            case "Arithmetic":
+            case 'A':
                 string  = "( "+lhs.ToString()+" "+operator+" "+rhs.ToString()+" )";
                 break;
-            case "Attribute":
+            case 'a':
                 string  = operator;
                 break;
             default:
