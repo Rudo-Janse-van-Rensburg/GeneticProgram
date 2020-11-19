@@ -31,7 +31,6 @@ public class Evolution {
         double currentFitness       = 0;
         /*Reset */
         int currGeneration          = 0;
-        //hall_of_fame.clear();
         currentGeneration.Clear();
         nextGeneration.Clear();
         
@@ -42,12 +41,13 @@ public class Evolution {
         while(numberEqualGenerations < convergenceThreshold && currGeneration < maxGeneration){
             /*2.) Evolve generation.*/
             
-            System.out.print("\rGENERATION #"+(currGeneration+1)+" - Fitness :   "+currentGeneration.GetIndividualFitness(0));
+            //System.out.print("\rGENERATION #"+(currGeneration+1)+" - Fitness :   "+currentGeneration.GetFittestScore());
             EvolveGeneration(currentGeneration,nextGeneration);
             lastFitness     = currGeneration;
-            currentFitness  = currentGeneration.GetIndividualFitness(0);
+            //currentFitness  = currentGeneration.GetIndividualFitness(0);
+            currentFitness  = currentGeneration.GetFittestScore();
             if(currentFitness > bestFitness){
-                bestIndividual  = currentGeneration.GetIndividual(0);
+                bestIndividual  = currentGeneration.GetFittestIndividual();
                 bestFitness = currentFitness;
                 numberEqualGenerations = 0;
             }else if(currentFitness == bestFitness || currentFitness == lastFitness){
@@ -55,7 +55,7 @@ public class Evolution {
             }else{
                 numberEqualGenerations = 0;
             }
-            //Print(currGeneration, numberEqualGenerations,currentGeneration);
+            Print(currGeneration, numberEqualGenerations,currentGeneration);
             ++currGeneration;
             
         }
@@ -109,7 +109,7 @@ public class Evolution {
             candidate   = g.GetIndividual(this.data.GetRandomIntExclusive(0,g.GetPopulationSize()));
             tournament.Add(candidate,IndividualFactory.Fitness(candidate,this.data));
         }
-        candidate   = tournament.GetIndividual(0);
+        candidate   = tournament.GetFittestIndividual();
         tournament.Clear();
         return candidate;
     }
@@ -127,7 +127,7 @@ public class Evolution {
             System.out.println("Convergence :   ("+numberEqualGenerations+"/"+convergenceThreshold+")");
             System.out.println("Individual  :   ("+(i+1)+"/"+g.GetOccupancy()+")");
             //System.out.println(g.GetIndividual(i).ToString());
-            System.out.println("FITNESS     :   "+g.GetIndividualFitness(i));
+            System.out.println("FITNESS     :   "+g.GetFittestScore());
         }
 
         System.out.println("-----------------------");
