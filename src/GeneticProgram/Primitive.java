@@ -1,5 +1,8 @@
 package GeneticProgram;
- 
+//! Primitive class
+/*!
+This class represents an abstract class for all Primitives in the parse tree.
+*/
 public abstract class Primitive {
     
     private char type;

@@ -1,15 +1,22 @@
 package GeneticProgram;
  
 import java.util.ArrayList;
-
+//!Generation class
+/*!
+This class holds the population of individuals within a generation.
+*/
 public class Generation {
+    private final int           populationSize;                     /*!< The maximum population size */
+    private int                 occupancy;                          /*!< The number of individuals already in the population */
+    private final Individual[]  population;                         /*!< The individuals within the population */
+    private final double[]      fitness;                            /*!< The Fitnesses of the individuals within the population */
+    private double bestFitness;                                     /*!< The best encountered fitness */
+    private Individual bestIndividual;                              /*!< The individual corresponding to the best fitness */
     
-    private final int           populationSize;
-    private int                 occupancy;
-    private final Individual[]  population;
-    private final double[]      fitness;
-    private double bestFitness;
-    private Individual bestIndividual;
+    //! A constructor
+    /*!
+    @param populationSize - the maximum population size
+    */
     public Generation(int populationSize){
         this.populationSize = populationSize;
         this.population     = new Individual[this.populationSize];
@@ -21,6 +28,9 @@ public class Generation {
         return this.populationSize;
     }
     
+    /*!
+    Clear and reset the generation
+    */
     public void Clear(){
         this.bestFitness    = 0;
         this.bestIndividual = null;

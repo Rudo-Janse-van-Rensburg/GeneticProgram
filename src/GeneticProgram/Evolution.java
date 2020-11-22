@@ -3,16 +3,29 @@ package GeneticProgram;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-
+//!Evolution class
+/*!
+This class oversees and manages the evolutionary processes. 
+*/
 public class Evolution {
-    private final Data          data;
-    private Individual          bestIndividual;
-    private final Generation    currentGeneration;
-    private final Generation    nextGeneration;
-    private final int           convergenceThreshold;
-    private final int           tournamentSize;
-    private final int           maxGeneration;
-    private final double        applicationRate;
+    private final Data          data;                   /*!< A pointer to the data */
+    private Individual          bestIndividual;         /*!< A pointer to the best individual encountered */
+    private final Generation    currentGeneration;      /*!< Holds the current generation of individuals */
+    private final Generation    nextGeneration;         /*!< Holds the next generation of individual */
+    private final int           convergenceThreshold;   /*!< The number of generations permitted to have the same "best fitness" */
+    private final int           tournamentSize;         /*!< The size of the tournament */
+    private final int           maxGeneration;          /*!< The maximum number of generations */
+    private final double        applicationRate;        /*!< The rate at which mutation is applied */
+    
+    //! A constructor
+    /*!
+    @param data - a pointer to the data object
+    @param populationSize - the size of the population
+    @param convergenceThreshold - the number of generations that may have the same best fitness before the search can be regarded as converged
+    @param tournamentSize -the size of the tournament
+    @param maxGeneration - the maximum number of generations
+    @param applicationRate - the rate at which mutation is applied
+    */
     public Evolution(Data data, int populationSize, int convergenceThreshold, int tournamentSize, int maxGeneration, double applicationRate) {
         this.data                   = data;
         this.convergenceThreshold   = convergenceThreshold;
@@ -23,6 +36,12 @@ public class Evolution {
         this.maxGeneration          = maxGeneration;
     }
     
+    
+    //! Search Method
+    /*!
+    Starts the genetic program evolutionary process. It produces a Individual, which is the Individual with the best Fitness that was 
+    encountered in the search.
+    */
     public Individual Start(){
         this.bestIndividual         = null;
         int numberEqualGenerations  = 0;

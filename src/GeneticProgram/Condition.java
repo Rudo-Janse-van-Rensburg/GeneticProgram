@@ -1,11 +1,17 @@
+//!An abstact class
+/*!
+This class represents an abstraction for all nodes in the Condition sub-branch.
+*/
+
 package GeneticProgram;
 
 public abstract class Condition extends Primitive {
 
-    private Condition lhs;
-    private Condition rhs;
-    private char operator;
+    private Condition lhs; /*!< The conditional node that represents the left hand side of the conditional operator.*/
+    private Condition rhs; /*!< The conditional node that represents the right hand side of the conditional operator.*/
+    private char operator; /*< A character that represents the conditional operator.*/
 
+    
     protected Condition(char type, char operator, Condition lhs, Condition rhs) {
         super(type);
         this.operator = operator;
