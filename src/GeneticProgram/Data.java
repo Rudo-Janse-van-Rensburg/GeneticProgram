@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -18,7 +17,7 @@ public final class Data {
     private double[][] data_array; 
     private int dataSize; 
     private Random random;
-    private int numClasses;
+    private final int numClasses;
     private int numberAttributes;
     
     public Data(long seed, int numClasses, String filename, String classname){

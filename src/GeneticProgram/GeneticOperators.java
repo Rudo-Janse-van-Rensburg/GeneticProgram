@@ -88,7 +88,7 @@ public class GeneticOperators {
     
     private static void MutateCondition(Condition c, char [] compatible, Data dataObj){
         int newTypeIndex    = dataObj.GetRandomIntExclusive(0, compatible.length);
-        char newType      = compatible[newTypeIndex]; 
+        char newType        = compatible[newTypeIndex]; 
         c.SetType(newType);
         char newOperator;
         switch (newType) {
