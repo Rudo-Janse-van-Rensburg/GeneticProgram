@@ -27,7 +27,7 @@ public class IndividualFactory {
         double targetClass;
         double predictedClass;
         for (int i = 0; i < dataObj.GetDataSize(); i++) {
-            targetClass         = dataObj.GetData()[i][dataObj.GetPosition(dataObj.GetClass())];
+            targetClass         = dataObj.GetData()[i][dataObj.GetPosition(dataObj.GetClassSymbol())];
             predictedClass      = Resolve(dataObj.GetData()[i],individual.GetRoot(),dataObj);
             if(predictedClass == targetClass){
                 truePositives[(int) Math.floor(targetClass)]        += 1;
@@ -36,9 +36,7 @@ public class IndividualFactory {
                 falseNegatives[(int) Math.floor(targetClass)]       += 1;
             }
         }
-        double totalTruePositives   = 0;
         for (int i = 0; i < numberOfClasses; i++) {
-            totalTruePositives += truePositives[i];
             if(truePositives[i] > 0 || falsePositives[i] > 0){
                 precision   += truePositives[i]/(truePositives[i]+falsePositives[i]);
             }
@@ -46,25 +44,10 @@ public class IndividualFactory {
                  recall      += truePositives[i]/(truePositives[i]+falseNegatives[i]);
             }
         }
-        //accuracy    = totalTruePositives/Data.GetDataSize();
         precision   /= numberOfClasses;
         recall      /= numberOfClasses;
         f1          = 2 * (precision * recall)/(precision + recall);
-        
-        
-        return f1;
-        /*
-        return (precision + recall + f1 + accuracy)/ 4;
-        
-        
-        double correct = 0;
-        for (int i = 0; i < Data.GetDataSize(); i++) {
-            if(Resolve(Data.GetData()[i],individual.GetRoot())  ==  Data.GetData()[i][Data.GetPosition(Data.GetClass())]){
-                ++correct;
-            }
-        }
-        return correct/Data.GetDataSize();
-        */
+        return f1; 
     } 
     
     public static double F1(Individual individual,Data dataObj){
@@ -85,7 +68,7 @@ public class IndividualFactory {
             for (int j = 0; j < dataObj.GetDataSize(); j++) {
                 double determinedClass  = Resolve(dataObj.GetData()[j],individual.GetRoot(),dataObj);
                 if(determinedClass == expectedClass){
-                    if(dataObj.GetData()[j][dataObj.GetPosition(dataObj.GetClass())] == expectedClass){
+                    if(dataObj.GetData()[j][dataObj.GetPosition(dataObj.GetClassSymbol())] == expectedClass){
                         truePositives += 1;
                     }else{
                         falsePositives += 1;
@@ -112,11 +95,11 @@ public class IndividualFactory {
             for (int j = 0; j < dataObj.GetDataSize(); j++) {
                 double determinedClass  = Resolve(dataObj.GetData()[j],individual.GetRoot(),dataObj);
                 if(determinedClass == expectedClass){
-                    if(dataObj.GetData()[j][dataObj.GetPosition(dataObj.GetClass())] == expectedClass){
+                    if(dataObj.GetData()[j][dataObj.GetPosition(dataObj.GetClassSymbol())] == expectedClass){
                         truePositives += 1;
                     }
                 }else{
-                    if(dataObj.GetData()[j][dataObj.GetPosition(dataObj.GetClass())] == expectedClass){
+                    if(dataObj.GetData()[j][dataObj.GetPosition(dataObj.GetClassSymbol())] == expectedClass){
                         falseNegatives += 1;
                     }
                 }
@@ -134,7 +117,7 @@ public class IndividualFactory {
         int numberCorrectPredictions    = 0;
         int numberPredictions           = dataObj.GetDataSize();
         for (int i = 0; i < numberPredictions; i++) {
-            if(Resolve(dataObj.GetData()[i],individual.GetRoot(),dataObj)  ==  dataObj.GetData()[i][dataObj.GetPosition(dataObj.GetClass())]){
+            if(Resolve(dataObj.GetData()[i],individual.GetRoot(),dataObj)  ==  dataObj.GetData()[i][dataObj.GetPosition(dataObj.GetClassSymbol())]){
                 ++numberCorrectPredictions;
             }
         }
@@ -142,7 +125,7 @@ public class IndividualFactory {
     }
     
     private static double Resolve(double[] dataArr, If i, Data dataObj){
-        if(i.GetType().equals("Class"))
+        if(i.GetType() == 'C')
             return i.GetClass();
         else if(Met(dataArr,i.GetCondition(), dataObj))
             return Resolve(dataArr,i.GetTrue(), dataObj);
@@ -152,9 +135,9 @@ public class IndividualFactory {
     
     private static boolean Met(double[] dataArr, Condition c, Data dataObj){
         boolean metCondition = false;
-        if(c.GetType().equals("Logical")){
+        if(c.GetType() == 'L'){
             metCondition = Resolve_Logical(dataArr, c, dataObj);
-        }else if(c.GetType().equals("Relational")){
+        }else if(c.GetType() == 'R'){
             metCondition = Resolve_Relational(dataArr, c, dataObj);
         }
         return metCondition; 
@@ -163,13 +146,13 @@ public class IndividualFactory {
     private static boolean Resolve_Logical(double[] dataArr, Condition c, Data dataObj){
         boolean result  = false;
         switch(c.GetOperator()){
-            case "OR":
+            case '|':
                 result = (Met(dataArr,c.GetLeft(),dataObj) || Met(dataArr,c.GetRight(),dataObj));
                 break;
-            case "AND":
+            case '&':
                 result = (Met(dataArr,c.GetLeft(),dataObj) && Met(dataArr,c.GetRight(),dataObj));
                 break;
-            case "NOT":
+            case '!':
                 result = (!Met(dataArr,c.GetRight(),dataObj));
                 break;
         }
@@ -179,19 +162,19 @@ public class IndividualFactory {
     private static boolean Resolve_Relational(double[] dataArr, Condition c, Data dataObj){
         boolean result  = false;
         switch(c.GetOperator()){
-            case ">":
+            case '>':
                 result = (Resolve_Arithmetic(dataArr,c.GetLeft(), dataObj) > Resolve_Arithmetic(dataArr,c.GetRight(),dataObj));
                 break;
-            case "<":
+            case '<':
                 result = (Resolve_Arithmetic(dataArr,c.GetLeft(), dataObj) < Resolve_Arithmetic(dataArr,c.GetRight(), dataObj));
                 break;
-            case ">=":
+            case 'g':
                 result = (Resolve_Arithmetic(dataArr,c.GetLeft(), dataObj) >= Resolve_Arithmetic(dataArr,c.GetRight(), dataObj));
                 break;
-            case "<=":
+            case 'l':
                 result = (Resolve_Arithmetic(dataArr,c.GetLeft(), dataObj) <= Resolve_Arithmetic(dataArr,c.GetRight(), dataObj));
                 break;
-            case "==":
+            case '=':
                 result = (Resolve_Arithmetic(dataArr,c.GetLeft(), dataObj) == Resolve_Arithmetic(dataArr,c.GetRight(), dataObj));
                 break;
         }
@@ -200,20 +183,20 @@ public class IndividualFactory {
     
     private static double Resolve_Arithmetic(double[] dataArr, Condition c, Data dataObj){
         double result = 0;
-        if(c.GetType().equals("Attribute")){
+        if(c.GetType() == 'a'){
             result  = dataArr[dataObj.GetPosition(c.GetOperator())];
         }else{
             switch(c.GetOperator()){
-                case "+":
+                case '+':
                     result  = Resolve_Arithmetic(dataArr, c.GetLeft(), dataObj) + Resolve_Arithmetic(dataArr, c.GetRight(),dataObj);
                     break;
-                case "-":
+                case '-':
                     result  = Resolve_Arithmetic(dataArr, c.GetLeft(), dataObj) - Resolve_Arithmetic(dataArr, c.GetRight(), dataObj);
                     break;
-                case "*":
+                case '*':
                     result  = Resolve_Arithmetic(dataArr, c.GetLeft(), dataObj) * Resolve_Arithmetic(dataArr, c.GetRight(), dataObj);
                     break;
-                case "/":
+                case '/':
                     result  = Resolve_Arithmetic(dataArr, c.GetLeft(), dataObj) / Resolve_Arithmetic(dataArr, c.GetRight(), dataObj);
                     break;
             }
