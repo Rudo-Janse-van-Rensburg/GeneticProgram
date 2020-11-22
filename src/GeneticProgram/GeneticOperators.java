@@ -51,6 +51,7 @@ public class GeneticOperators {
     @param depth - the current depth
     @param maxDepth - the maximum depth
     @param dataObj - the data set
+    @return a newly grown individual
     */
     public static If Grow(int depth, int maxDepth, Data dataObj) {
         if (depth < maxDepth) {
@@ -163,6 +164,7 @@ public class GeneticOperators {
     @param a - parent a
     @param b - parent b
     @param dataObj - the dataset
+    @return 2 individuals as a result of crossover
     */
     public static Individual[] Crossover(Individual a, Individual b, Data dataObj){
         //System.out.print("CROSSOVER ");
@@ -309,6 +311,13 @@ public class GeneticOperators {
         }
     } 
     
+    /*!
+    @param i - individual to prune
+    @param depth - the current depth 
+    @param maxDepth - the maximum depth
+    @param dataObj - the data set
+
+    */
     public static void Trim(Individual i, int depth, int maxDepth,Data dataObj){
         TrimPrimitive(i.GetRoot(), depth, maxDepth,dataObj);
     }

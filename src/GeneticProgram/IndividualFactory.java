@@ -1,21 +1,37 @@
 package GeneticProgram;
-
+//!Individual Factor
+/*!
+This class contains utilities necessary for Individual creation and manipulation
+*/
 public class IndividualFactory {
     
     
     public IndividualFactory(){
     }  
     
+    /*!
+    @param dataObj - data set
+    @return a newly created individual
+    */
     public static Individual PopOneOut(Data dataObj){
         Individual i = new Individual(null);
         i.SetRoot(GeneticOperators.Grow(0,GeneticOperators.initialMaxDepth,dataObj));
         return i;
     }
 
+    /*!
+    @param i - an individual to clone
+    @return a deep copy of the individual i
+    */
     public static Individual Clone(Individual i){
         return new Individual(i);
     }
     
+    /*!
+    @param individual - an individual to determine the fitness of
+    @param dataObj - the data set
+    @return the fitness of the individual
+    */
     public static double Fitness(Individual individual, Data dataObj){
         double fitness          = 0;
         double accuracy         = 0;
