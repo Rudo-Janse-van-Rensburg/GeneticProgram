@@ -7,30 +7,37 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+//! Data class
+/*!
+This class is responsible for reading, managing, preparing and presenting data to the rest of the program.
+*/
 public final class Data {
+    private char classSymbol;                               /*!< The symbol representing the class attribute.*/
+    private char[] symbolsWithoutClass;                     /*< The collection of symbols, with the class attribute excluded */
+    private HashMap<String, Character> hmAttributeSymbol;   /*< Relates attributes to their symbol representation*/
+    private HashMap<Character, Integer> hmSymbolPosition;   /*< Relates symbols to their position within the array */
+    private ArrayList<Double>[] data_list;                  /*< Holds the data instances */
+    private double[][] data_array;                          /*< Holds the data instances */
+    private int dataSize;                                   /*< Holds the number of data instances */
+    private Random random;                                  /*< Generates random numbers */
+    private final int numClasses;                           /*< The number of classes in the dataset */
+    private int numberAttributes;                           /*< The number of attributes in the dataset */
     
-    private char classSymbol;
-    private char[] symbolsWithoutClass;
-    private HashMap<String, Character> hmAttributeSymbol;
-    private HashMap<Character, Integer> hmSymbolPosition;
-    private ArrayList<Double>[] data_list; 
-    private double[][] data_array; 
-    private int dataSize; 
-    private Random random;
-    private final int numClasses;
-    private int numberAttributes;
     
+    //!A constructor
+    /*!
+    @param seed - the seed for the random number generator
+    @param numClasses - the number of classes in the dataset
+    @param filename - the name of the file to read
+    @param classname - the name of the class attribute in the dataset
+    */
     public Data(long seed, int numClasses, String filename, String classname){
         this.random     = new Random(seed);
         this.numClasses = numClasses;
         this.ReadData(filename, classname);
-    }
+    } 
     
-    public void ReadData(String filename, String classname){
-        /*
-            Remove unwanted attributes effectively
-            
-        */
+    private void ReadData(String filename, String classname){ 
         this.random                     = new Random(42069);
         String line                     = "";
         String splitBy                  = ",";
@@ -100,7 +107,7 @@ public final class Data {
     public char GetClassSymbol(){
         return this.classSymbol;
     }
-     
+    
     public double[][] GetData(){
         return this.data_array;
     } 

@@ -1,12 +1,22 @@
 package GeneticProgram;
-
+//! If Class
+/*!
+This class reperesnts an If node in the If sub-branch,
+for which it is an intermediate node.
+*/
 public class If extends Primitive{
     
-    private If t;
-    private If f;
-    private Condition condition;
-    private double cls;
+    private If t; /*!< The If node that represents the action that should be taken should the condition evaluate true.*/
+    private If f;/*!< The If node that represents the action that should be taken should the condition evaluate false. */
+    private Condition condition;/*!< The Condition node that represents the condition of the If statement.*/
+    private double cls;/*!< The class value, should this be a class node.*/
      
+    //!A constructor
+    /*!
+    @param c - the condition 
+    @param t - the If node for when the condition evaluates true
+    @param f - the If node for when the condition evaluates false
+    */
     public If(Condition c, If t, If f){
         super('I');
         this.condition  = c;
@@ -21,7 +31,10 @@ public class If extends Primitive{
         this.f          = null;
         this.condition  = null;
     }
-    
+    //!A copy constructor
+    /*!
+    @param p -An If node to copy
+    */
     public If(If p){
         super(p.GetType());
         this.t          = null;
@@ -42,26 +55,7 @@ public class If extends Primitive{
                     this.condition = null;
             }
         }
-        this.cls        = p.cls;
-        /*
-        if(p.GetType().equals("If")){
-            this.t          = (p.GetType().equals("If")) ? new If(p.t) : null;
-            this.f          = (p.GetType().equals("If")) ? new If(p.f) : null;
-        
-            switch(p.GetCondition().GetType()){
-                case "Logical":
-                    SetCondition(new Logical(p.GetCondition()));
-                    break;
-                case "Relational":
-                    SetCondition(new Relational(p.GetCondition()));
-                    break;
-                default:
-                    this.condition  = null;
-            }
-        }
-
-        this.cls        = p.cls;
-        */
+        this.cls        = p.cls; 
     }
     
     public Condition GetCondition(){
@@ -101,12 +95,7 @@ public class If extends Primitive{
                 (this.GetType() == 'C') 
                     ? this.cls + "" 
                     : "if ("+condition.ToString()+"){\n"+t.ToString()+"\n"+f.ToString()+"}"
-                );
-        /*
-        return (this.GetType().equals("Class")) 
-                ? this.cls + "" 
-                : "if ("+condition.ToString()+"){\n"+t.ToString()+"\n"+f.ToString()+"}";
-        */
+                ); 
     }
     
 }

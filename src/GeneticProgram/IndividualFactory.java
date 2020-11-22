@@ -7,7 +7,9 @@ public class IndividualFactory {
     }  
     
     public static Individual PopOneOut(Data dataObj){
-        return new Individual(GeneticOperators.Grow(0,GeneticOperators.initialMaxDepth,dataObj));
+        Individual i = new Individual(null);
+        i.SetRoot(GeneticOperators.Grow(0,GeneticOperators.initialMaxDepth,dataObj));
+        return i;
     }
 
     public static Individual Clone(Individual i){

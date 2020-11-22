@@ -1,14 +1,20 @@
 package GeneticProgram;
 
+//! Individual Class
+/*!
+This class represents an Individual in the population.
+*/
 public class Individual { 
-    private If root;
-
-    public Individual(If p){
-        this.root   = p;
-    }
-    
+    private If root;/*!< A pointer to the root of the parse-tree */
+     
+    //! A copy constructor
+    /*!
+    @param i - an individual to copy.
+    */
     public Individual(Individual i){
-        this.root = new If(i.GetRoot());
+        if(i != null){
+            this.root = new If(i.GetRoot());    
+        }
     }
     
     public If GetRoot(){

@@ -1,49 +1,57 @@
 package GeneticProgram;
  
 import java.util.ArrayList;
-
+//!Genetic Operator class
+/*!
+This class oversees the genetic operators
+*/
 public class GeneticOperators {
     
-    public static int initialMaxDepth                   = 5;
+    public static int initialMaxDepth                   = 5;            /*!< The maximum depth of the initial generation*/
+            
+    public static int maxDepth                          = 10;           /*!< The maximum depth of the subsequent generations */
     
-    public static int maxDepth                          = 10; 
-    
-    private final static char[] logical                 = new char[]{
+    private final static char[] logical                 = new char[]{   /*!< The logical operators */
         '&','|','!'
     };
     
-    private final static char[] relational              = new char[]{
+    private final static char[] relational              = new char[]{   /*!< The relation operators */
         '>','<','g','l','='
     };
         
-    private final static char[] arithmetic              = new char[]{
+    private final static char[] arithmetic              = new char[]{   /*< The arithmetic operators */
         '+','-','*','/'
     };
     
-    private final static char[] conditionTypes          = new char[]{
+    private final static char[] conditionTypes          = new char[]{   /*< The Condition types */
         'L',
         'R',
         'A',
         'a'
     };
     
-    private final static char[] ifTypes                 = new char[]{
+    private final static char[] ifTypes                 = new char[]{   /*< The If types */
         'I',
         'C'
     };
     
-    private final static char[][] conditionCompatible   = new char[][]{
+    private final static char[][] conditionCompatible   = new char[][]{ /*< The compatible condition pairs*/
         {'L','R'},
         {'R','L'},
         {'A','a'},
         {'a','A'} 
     }; 
     
-    private final static char[][] ifCompatible          = new char[][]{
+    private final static char[][] ifCompatible          = new char[][]{ /*< The compatible If pairs */
         {'I','C'},
         {'C','I'}
     };
      
+    /*!
+    @param depth - the current depth
+    @param maxDepth - the maximum depth
+    @param dataObj - the data set
+    */
     public static If Grow(int depth, int maxDepth, Data dataObj) {
         if (depth < maxDepth) {
             if (depth == 0 || dataObj.GetPercentage() <= 0.5) {
@@ -58,6 +66,10 @@ public class GeneticOperators {
             return new Class(dataObj.GetRandomIntExclusive(0, dataObj.GetNumberClasses()));
     } 
     
+    /*!
+    @param m - the individual to mutate
+    @param dataObj - the data set
+    */
     public static void Mutate(Individual m, Data dataObj){
         //System.out.print("MUTATING ");
         if(!(m.GetRoot().GetType() == 'C') && dataObj.GetPercentage() < 0.5){
@@ -147,6 +159,11 @@ public class GeneticOperators {
         }
     }
     
+    /*!
+    @param a - parent a
+    @param b - parent b
+    @param dataObj - the dataset
+    */
     public static Individual[] Crossover(Individual a, Individual b, Data dataObj){
         //System.out.print("CROSSOVER ");
         Individual newA = new Individual(a);
